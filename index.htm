@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Шаблонные решения</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen;
+            background: #f5f5f5;
+            color: #333;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #1a73e8; }
+        .solution { text-align: left; margin: 20px 0; line-height: 1.6; }
+        .footer { margin-top: 30px; color: #666; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Шаблонные решения</h1>
+        <div class="solution">
+            <strong>1. Как оформить заказ?</strong><br>
+            Перейдите в каталог и нажмите «Купить».
+        </div>
+        <div class="solution">
+            <strong>2. Срок доставки?</strong><br>
+            1–3 дня по городу, 5–7 дней по России.
+        </div>
+        <div class="solution">
+            <strong>3. Оплата?</strong><br>
+            Онлайн или при получении.
+        </div>
+        <p><em>Эта страница загружена через WebApp.</em></p>
+        <button onclick="closeWindow()" style="margin-top:20px; padding:10px 20px; background:#1a73e8; color:white; border:none; border-radius:6px; cursor:pointer;">
+            Закрыть
+        </button>
+    </div>
+
+    <script>
+        function closeWindow() {
+            // Закрывает окно WebApp (работает только в Telegram)
+            if (window.Telegram?.WebApp) {
+                window.Telegram.WebApp.close();
+            } else {
+                alert("Закрытие доступно только внутри Telegram.");
+            }
+        }
+    </script>
+</body>
+</html>
