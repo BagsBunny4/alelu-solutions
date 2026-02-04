@@ -65,6 +65,7 @@
         </table>
     </div>
 
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         const API_BASE_URL = "http://localhost:8000";
         const STATUS_LABELS = {
@@ -175,7 +176,13 @@
         }
 
         async function init() {
-            const initData = window.Telegram?.WebApp?.initData || "";
+            const tg = window.Telegram?.WebApp;
+            if (!tg) {
+                showError("WebApp не найден. Откройте страницу из Telegram.");
+                return;
+            }
+            tg.ready();
+            const initData = tg.initData || "";
             const auth = await api("/api/auth", { initData });
             if (!auth.ok) {
                 showError(auth.error || "Ошибка авторизации");
