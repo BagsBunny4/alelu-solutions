@@ -189,6 +189,37 @@
             font-size: 12px;
         }
 
+        .modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.5);
+            z-index: 50;
+        }
+        .modal-card {
+            width: min(520px, 92vw);
+            background: var(--bg-2);
+            border: 1px solid var(--stroke);
+            border-radius: 16px;
+            padding: 16px;
+        }
+        .modal-card h3 {
+            margin: 0 0 10px;
+            font-size: 16px;
+        }
+        .modal-row { margin: 8px 0; }
+        .input {
+            width: 100%;
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--stroke);
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 13px;
+        }
+
         @media (max-width: 700px) {
             .title { font-size: 24px; }
             .table th, .table td { font-size: 12px; }
@@ -242,6 +273,23 @@
             </div>
         </div>
     </div>
+    <div class="modal" id="renameModal">
+        <div class="modal-card">
+            <h3>Переименовать группу</h3>
+            <div class="modal-row">
+                <label>Клиент из базы</label>
+                <select class="select" id="renameClientSelect"></select>
+            </div>
+            <div class="modal-row">
+                <label>Или введите имя вручную</label>
+                <input class="input" id="renameManualInput" placeholder="Например: Полина или @username" />
+            </div>
+            <div class="toolbar" style="margin-top:10px;">
+                <button class="btn" onclick="closeRenameModal()">Отмена</button>
+                <button class="btn primary" onclick="submitRename()">Переименовать</button>
+            </div>
+        </div>
+    </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
@@ -251,6 +299,8 @@
             "IN_PROGRESS": "в работе",
             "DONE": "сдан проект"
         };
+        let clientsCache = [];
+        let renameProjectId = null;
 
         function showError(msg) {
             const el = document.getElementById("errorBox");
@@ -297,6 +347,7 @@
                 showError(data.error || "Ошибка загрузки клиентов");
                 return;
             }
+            clientsCache = data.clients || [];
             renderClients(data.clients || []);
         }
 
@@ -356,6 +407,14 @@
                         loadProjects(role);
                     };
                     actions.appendChild(archiveBtn);
+
+                    const renameBtn = document.createElement("button");
+                    renameBtn.className = "btn";
+                    renameBtn.textContent = "Переименовать";
+                    renameBtn.onclick = async () => {
+                        openRenameModal(p.project_id);
+                    };
+                    actions.appendChild(renameBtn);
                 }
                 tbody.appendChild(tr);
             });
@@ -395,6 +454,52 @@
             if (tab === "clients") {
                 loadClients();
             }
+        }
+
+        function openRenameModal(projectId) {
+            renameProjectId = projectId;
+            const modal = document.getElementById("renameModal");
+            const select = document.getElementById("renameClientSelect");
+            const input = document.getElementById("renameManualInput");
+            input.value = "";
+            select.innerHTML = "";
+            const empty = document.createElement("option");
+            empty.value = "";
+            empty.textContent = "— выбрать клиента —";
+            select.appendChild(empty);
+            clientsCache.forEach(c => {
+                const opt = document.createElement("option");
+                opt.value = c.user_id;
+                const uname = c.username ? "@" + c.username : "";
+                opt.textContent = `${c.first_name || "Клиент"} ${uname}`.trim();
+                select.appendChild(opt);
+            });
+            modal.style.display = "flex";
+        }
+
+        function closeRenameModal() {
+            const modal = document.getElementById("renameModal");
+            modal.style.display = "none";
+        }
+
+        async function submitRename() {
+            const select = document.getElementById("renameClientSelect");
+            const input = document.getElementById("renameManualInput");
+            const clientId = select.value ? Number(select.value) : null;
+            const label = input.value.trim();
+            if (!clientId && !label) {
+                showError("Выберите клиента или введите имя.");
+                return;
+            }
+            const initData = window.Telegram?.WebApp?.initData || "";
+            const payload = { initData, project_id: renameProjectId };
+            if (clientId) payload.client_id = clientId;
+            if (!clientId && label) payload.label = label;
+            const res = await api("/api/admin/rename-group", payload);
+            if (!res.ok) return showError(res.error || "Ошибка");
+            showSuccess("Группа переименована: " + res.title);
+            closeRenameModal();
+            loadProjects("admin");
         }
 
         async function createInvite() {
