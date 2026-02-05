@@ -229,6 +229,11 @@
             padding: 8px 10px;
             font-size: 13px;
         }
+        .inline-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
 
         @media (max-width: 700px) {
             .title { font-size: 24px; }
@@ -276,6 +281,7 @@
                     <th>Username</th>
                     <th>Активен</th>
                     <th>Создан</th>
+                    <th>Действия</th>
                 </tr>
             </thead>
             <tbody id="clientsBody"></tbody>
@@ -300,6 +306,23 @@
             </div>
         </div>
     </div>
+    <div class="modal" id="editClientModal">
+        <div class="modal-card">
+            <h3>Редактировать клиента</h3>
+            <div class="modal-row">
+                <label>Имя</label>
+                <input class="input" id="editClientName" />
+            </div>
+            <div class="modal-row">
+                <label>Username (без @)</label>
+                <input class="input" id="editClientUsername" />
+            </div>
+            <div class="toolbar" style="margin-top:10px;">
+                <button class="btn" onclick="closeEditClientModal()">Отмена</button>
+                <button class="btn primary" onclick="submitEditClient()">Сохранить</button>
+            </div>
+        </div>
+    </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
@@ -311,6 +334,7 @@
         };
         let clientsCache = [];
         let renameProjectId = null;
+        let editClientId = null;
 
         function showError(msg) {
             const el = document.getElementById("errorBox");
@@ -435,7 +459,7 @@
             tbody.innerHTML = "";
             if (!clients.length) {
                 const tr = document.createElement("tr");
-                tr.innerHTML = `<td colspan="5">Клиентов пока нет</td>`;
+                tr.innerHTML = `<td colspan="6">Клиентов пока нет</td>`;
                 tbody.appendChild(tr);
                 return;
             }
@@ -447,7 +471,20 @@
                     <td>${c.username ? "@" + c.username : ""}</td>
                     <td>${c.is_active ? "да" : "нет"}</td>
                     <td>${c.created_at || ""}</td>
+                    <td class="inline-actions"></td>
                 `;
+                const actions = tr.querySelector(".inline-actions");
+                const editBtn = document.createElement("button");
+                editBtn.className = "btn";
+                editBtn.textContent = "Редактировать";
+                editBtn.onclick = () => openEditClientModal(c);
+                actions.appendChild(editBtn);
+
+                const delBtn = document.createElement("button");
+                delBtn.className = "btn danger";
+                delBtn.textContent = "Удалить";
+                delBtn.onclick = () => deleteClient(c);
+                actions.appendChild(delBtn);
                 tbody.appendChild(tr);
             });
         }
@@ -518,6 +555,45 @@
             if (!res.ok) return showError(res.error || "Ошибка");
             showSuccess("Группа переименована: " + res.title);
             closeRenameModal();
+            loadProjects("admin");
+        }
+
+        function openEditClientModal(client) {
+            editClientId = client.user_id;
+            document.getElementById("editClientName").value = client.first_name || "";
+            document.getElementById("editClientUsername").value = client.username || "";
+            document.getElementById("editClientModal").style.display = "flex";
+        }
+
+        function closeEditClientModal() {
+            document.getElementById("editClientModal").style.display = "none";
+        }
+
+        async function submitEditClient() {
+            const first_name = document.getElementById("editClientName").value.trim();
+            const username = document.getElementById("editClientUsername").value.trim().replace("@", "");
+            const initData = window.Telegram?.WebApp?.initData || "";
+            const res = await api("/api/admin/clients/update", { initData, user_id: editClientId, first_name, username });
+            if (!res.ok) return showError(res.error || "Ошибка");
+            showSuccess("Клиент обновлен");
+            closeEditClientModal();
+            await loadClients();
+            loadProjects("admin");
+        }
+
+        async function deleteClient(client) {
+            if (!confirm(`Удалить клиента ${client.first_name || client.user_id}?`)) return;
+            const initData = window.Telegram?.WebApp?.initData || "";
+            const res = await api("/api/admin/clients/delete", { initData, user_id: client.user_id });
+            if (!res.ok) {
+                if (res.error === "client_has_projects") {
+                    showError("Клиент привязан к проекту. Сначала отвяжите или архивируйте проект.");
+                    return;
+                }
+                return showError(res.error || "Ошибка");
+            }
+            showSuccess("Клиент удален");
+            await loadClients();
             loadProjects("admin");
         }
 
