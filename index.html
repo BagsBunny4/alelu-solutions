@@ -367,7 +367,7 @@
                     <td>${p.project_id}</td>
                     <td>${p.proj_code || ""}</td>
                     <td><span class="badge ${statusClass}">${STATUS_LABELS[p.status] || p.status}</span></td>
-                    <td>${p.group_title || ""}</td>
+                    <td title="${p.group_title || ""}">${p.group_title || ""}</td>
                     <td>${p.client_id || ""}</td>
                     <td class="actions"></td>
                 `;
