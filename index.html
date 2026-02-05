@@ -6,16 +6,16 @@
     <title>Telegram CRM</title>
     <style>
         :root {
-            --bg: #0b0f14;
-            --bg-2: #0f151c;
-            --panel: rgba(255, 255, 255, 0.06);
+            --bg: #0a0f14;
+            --bg-2: #0f141b;
+            --panel: rgba(255, 255, 255, 0.05);
             --panel-strong: rgba(255, 255, 255, 0.10);
-            --stroke: rgba(255, 255, 255, 0.08);
-            --text: #e9eef3;
-            --muted: #a6b2bf;
-            --accent: #22d3ee;
-            --accent-2: #60a5fa;
-            --ok: #34d399;
+            --stroke: rgba(255, 255, 255, 0.10);
+            --text: #e7edf3;
+            --muted: #9aa6b2;
+            --accent: #00e5ff;
+            --accent-2: #7aa2ff;
+            --ok: #22c55e;
             --warn: #f59e0b;
             --danger: #ef4444;
         }
@@ -25,22 +25,22 @@
         body {
             font-family: "Space Grotesk", "Rubik", "Segoe UI", sans-serif;
             background:
-                radial-gradient(1200px 600px at 10% -10%, rgba(34,211,238,0.18), transparent 60%),
-                radial-gradient(900px 600px at 90% 0%, rgba(96,165,250,0.18), transparent 60%),
-                linear-gradient(180deg, #0a0f14 0%, #0b1118 100%);
+                radial-gradient(1200px 700px at -10% -20%, rgba(0,229,255,0.18), transparent 60%),
+                radial-gradient(900px 700px at 110% -10%, rgba(122,162,255,0.18), transparent 60%),
+                linear-gradient(180deg, #0a0f14 0%, #0b1219 100%);
             color: var(--text);
             margin: 0;
             min-height: 100vh;
         }
 
         .shell {
-            max-width: 1100px;
-            margin: 18px auto 40px;
-            padding: 0 14px;
+            max-width: 1200px;
+            margin: 16px auto 40px;
+            padding: 0 12px;
         }
 
         .hero {
-            background: linear-gradient(135deg, rgba(34,211,238,0.08), rgba(96,165,250,0.08));
+            background: linear-gradient(135deg, rgba(0,229,255,0.10), rgba(122,162,255,0.10));
             border: 1px solid var(--stroke);
             border-radius: 18px;
             padding: 18px 18px 14px;
@@ -57,7 +57,7 @@
         }
 
         .title {
-            font-size: 28px;
+            font-size: 30px;
             margin: 0 0 6px;
             letter-spacing: 0.2px;
         }
@@ -186,6 +186,16 @@
             border: 1px solid var(--stroke);
             border-radius: 8px;
             padding: 6px 8px;
+            font-size: 12px;
+        }
+
+        .cell-wrap {
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        .mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
             font-size: 12px;
         }
 
@@ -365,10 +375,10 @@
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
                     <td>${p.project_id}</td>
-                    <td>${p.proj_code || ""}</td>
+                    <td class="mono">${p.proj_code || ""}</td>
                     <td><span class="badge ${statusClass}">${STATUS_LABELS[p.status] || p.status}</span></td>
-                    <td title="${p.group_title || ""}">${p.group_title || ""}</td>
-                    <td>${p.client_id || ""}</td>
+                    <td class="cell-wrap">${p.group_title || "—"}</td>
+                    <td>${formatClient(p.client_id)}</td>
                     <td class="actions"></td>
                 `;
                 const actions = tr.querySelector(".actions");
@@ -440,6 +450,15 @@
                 `;
                 tbody.appendChild(tr);
             });
+        }
+
+        function formatClient(clientId) {
+            if (!clientId) return "—";
+            const found = clientsCache.find(c => Number(c.user_id) === Number(clientId));
+            if (!found) return clientId;
+            const uname = found.username ? "@" + found.username : "";
+            const name = found.first_name || "Клиент";
+            return `${name} ${uname}`.trim();
         }
 
         function showTab(tab) {
@@ -535,6 +554,9 @@
             document.getElementById("roleInfo").textContent = "Роль: " + auth.role;
             if (auth.role === "admin") {
                 document.getElementById("adminActions").style.display = "block";
+            }
+            if (auth.role === "admin") {
+                await loadClients();
             }
             loadProjects(auth.role);
         }
