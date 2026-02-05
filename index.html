@@ -191,12 +191,7 @@
 
         @media (max-width: 700px) {
             .title { font-size: 24px; }
-            .table th:nth-child(4),
-            .table td:nth-child(4),
-            .table th:nth-child(5),
-            .table td:nth-child(5) {
-                display: none;
-            }
+            .table th, .table td { font-size: 12px; }
         }
     </style>
 </head>
@@ -205,8 +200,7 @@
         <div class="hero">
             <h1 class="title">Telegram CRM</h1>
             <div class="meta">
-                <span id="roleInfo">Роль: ...</span>
-                <span class="pill" id="envInfo">Live</span>
+                <span id="roleInfo">Роль: загрузка...</span>
             </div>
         </div>
 
@@ -272,12 +266,17 @@
         }
 
         async function api(path, data) {
-            const res = await fetch(API_BASE_URL + path, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
-            });
-            return res.json();
+            try {
+                const res = await fetch(API_BASE_URL + path, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+                return res.json();
+            } catch (e) {
+                showError("Не удалось подключиться к API. Проверь HTTPS и адрес API.");
+                return { ok: false, error: "network_error" };
+            }
         }
 
         async function loadProjects(role) {
@@ -304,6 +303,12 @@
         function renderProjects(projects, role) {
             const tbody = document.getElementById("projectsBody");
             tbody.innerHTML = "";
+            if (!projects.length) {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td colspan="6">Пока нет проектов</td>`;
+                tbody.appendChild(tr);
+                return;
+            }
             projects.forEach(p => {
                 const statusClass = p.status === "NEW_CLIENT" ? "status-new" : (p.status === "IN_PROGRESS" ? "status-work" : "status-done");
                 const tr = document.createElement("tr");
@@ -359,6 +364,12 @@
         function renderClients(clients) {
             const tbody = document.getElementById("clientsBody");
             tbody.innerHTML = "";
+            if (!clients.length) {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td colspan="5">Клиентов пока нет</td>`;
+                tbody.appendChild(tr);
+                return;
+            }
             clients.forEach(c => {
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
