@@ -3,34 +3,260 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Telegram CRM</title>
+    <title>ALELU CONSULTING</title>
     <style>
         :root {
-            --bg: #0a0f14;
-            --bg-2: #0f141b;
-            --panel: rgba(255, 255, 255, 0.05);
-            --panel-strong: rgba(255, 255, 255, 0.10);
-            --stroke: rgba(255, 255, 255, 0.10);
-            --text: #e7edf3;
-            --muted: #9aa6b2;
-            --accent: #00e5ff;
-            --accent-2: #7aa2ff;
-            --ok: #22c55e;
-            --warn: #f59e0b;
-            --danger: #ef4444;
+            --color-primary: #145A32;
+            --color-primary-dark: #0F4F2F;
+            --color-accent: #7FD9B5;
+            --color-bg: #F4F8F4;
+            --color-white: #FFFFFF;
+            --color-text-main: #1A1A1A;
+            --color-text-muted: #6B6B6B;
+
+            --bg: var(--color-bg);
+            --bg-2: var(--color-white);
+            --panel: rgba(20, 90, 50, 0.06);
+            --panel-strong: rgba(20, 90, 50, 0.12);
+            --stroke: rgba(20, 90, 50, 0.18);
+            --text: var(--color-text-main);
+            --muted: var(--color-text-muted);
+            --accent: var(--color-accent);
+            --accent-2: var(--color-primary);
+            --ok: var(--color-primary);
+            --warn: #b45309;
+            --danger: #b91c1c;
         }
 
         * { box-sizing: border-box; }
 
         body {
             font-family: "Space Grotesk", "Rubik", "Segoe UI", sans-serif;
-            background:
-                radial-gradient(1200px 700px at -10% -20%, rgba(0,229,255,0.18), transparent 60%),
-                radial-gradient(900px 700px at 110% -10%, rgba(122,162,255,0.18), transparent 60%),
-                linear-gradient(180deg, #0a0f14 0%, #0b1219 100%);
+            background: #F4F8F4;
             color: var(--text);
             margin: 0;
             min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background:
+                radial-gradient(1200px 700px at -10% -20%, rgba(127,217,181,0.35), transparent 60%),
+                radial-gradient(900px 700px at 110% -10%, rgba(20,90,50,0.12), transparent 60%),
+                linear-gradient(180deg, #F4F8F4 0%, #EEF5F0 100%);
+        }
+
+        .app {
+            position: relative;
+            min-height: 100vh;
+            padding: 16px;
+            overflow-x: hidden;
+            max-width: 100vw;
+            overflow-x: clip;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid var(--stroke);
+            border-radius: 18px;
+            padding: 16px;
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            height: calc(100vh - 32px);
+            width: min(260px, 86vw);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            /* blur removed for performance */
+            transform: translateX(-120%);
+            transition: transform 0.2s ease;
+            z-index: 40;
+            overflow-y: auto;
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 20, 14, 0.25);
+            display: none;
+            z-index: 30;
+        }
+
+        .backdrop.show {
+            display: block;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .burger {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            border: 1px solid var(--stroke);
+            background: var(--color-white);
+            color: var(--text);
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+        }
+
+        .burger-lines {
+            display: grid;
+            gap: 4px;
+        }
+
+        .burger-lines span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: var(--color-primary);
+            border-radius: 2px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-badge {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(127,217,181,0.7), rgba(20,90,50,0.25));
+            border: 1px solid rgba(20,90,50,0.2);
+            display: grid;
+            place-items: center;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-title {
+            font-size: 15px;
+            margin: 0;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--text);
+            font-size: 14px;
+            cursor: pointer;
+            text-align: left;
+            min-width: 0;
+            white-space: normal;
+        }
+
+        .nav-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+        }
+        .nav-row .nav-item {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+        .nav-arrow-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            border: 1px solid var(--stroke);
+            background: transparent;
+            color: var(--text);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            z-index: 2;
+        }
+        .nav-arrow-icon {
+            width: 10px;
+            height: 10px;
+            border-right: 2px solid var(--muted);
+            border-bottom: 2px solid var(--muted);
+            transform: rotate(-45deg);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .nav-group.open .nav-arrow-icon {
+            transform: rotate(45deg);
+            border-color: var(--accent);
+        }
+
+        .nav-item.active {
+            border-color: rgba(20, 90, 50, 0.4);
+            background: rgba(127, 217, 181, 0.28);
+            color: var(--color-primary-dark);
+        }
+
+        .nav-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav-sub {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            margin-left: 14px;
+        }
+
+        .nav-group.open .nav-sub {
+            display: flex;
+        }
+
+        .nav-group.no-sub .nav-sub,
+        .nav-group.no-sub:hover .nav-sub {
+            display: none;
+        }
+        .nav-group.no-sub .nav-arrow-btn {
+            display: none;
+        }
+
+        .nav-sub .nav-item {
+            font-size: 13px;
+            padding: 8px 10px;
+        }
+
+        .nav-meta {
+            margin-top: auto;
+            color: var(--muted);
+            font-size: 12px;
+            border-top: 1px solid var(--stroke);
+            padding-top: 12px;
+        }
+
+        .main {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .shell {
@@ -40,7 +266,7 @@
         }
 
         .hero {
-            background: linear-gradient(135deg, rgba(0,229,255,0.10), rgba(122,162,255,0.10));
+            background: linear-gradient(135deg, rgba(127,217,181,0.22), rgba(20,90,50,0.08));
             border: 1px solid var(--stroke);
             border-radius: 18px;
             padding: 18px 18px 14px;
@@ -52,7 +278,7 @@
             content: "";
             position: absolute;
             inset: 0;
-            background: radial-gradient(500px 120px at 20% 0%, rgba(34,211,238,0.15), transparent 70%);
+            background: radial-gradient(500px 120px at 20% 0%, rgba(127,217,181,0.28), transparent 70%);
             pointer-events: none;
         }
 
@@ -90,7 +316,7 @@
             border: 1px solid var(--stroke);
             border-radius: 16px;
             padding: 12px;
-            backdrop-filter: blur(10px);
+            /* blur removed for performance */
         }
 
         .toolbar {
@@ -112,13 +338,13 @@
         }
 
         .btn:hover {
-            border-color: rgba(96,165,250,0.5);
-            background: rgba(96,165,250,0.12);
+            border-color: rgba(20, 90, 50, 0.35);
+            background: rgba(127, 217, 181, 0.22);
         }
 
         .btn.primary {
-            border-color: rgba(34,211,238,0.6);
-            background: linear-gradient(135deg, rgba(34,211,238,0.25), rgba(96,165,250,0.25));
+            border-color: rgba(20, 90, 50, 0.5);
+            background: linear-gradient(135deg, rgba(127,217,181,0.45), rgba(20,90,50,0.15));
         }
 
         .btn.danger {
@@ -136,20 +362,21 @@
             padding: 6px 10px;
             border-radius: 999px;
             border: 1px solid var(--stroke);
-            background: rgba(255,255,255,0.03);
+            background: rgba(20, 90, 50, 0.06);
             font-size: 12px;
             cursor: pointer;
         }
 
         .tab.active {
-            border-color: rgba(34,211,238,0.6);
-            color: var(--accent);
+            border-color: rgba(20, 90, 50, 0.5);
+            color: var(--color-primary-dark);
         }
 
         .table {
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
+            min-width: 680px;
         }
 
         .table th, .table td {
@@ -157,6 +384,18 @@
             border-bottom: 1px solid var(--stroke);
             text-align: left;
             vertical-align: middle;
+            max-width: 220px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .row-click {
+            cursor: pointer;
+        }
+
+        .row-click:hover {
+            background: rgba(127, 217, 181, 0.18);
         }
 
         .table th {
@@ -175,6 +414,62 @@
         .status-new { color: var(--accent); }
         .status-work { color: var(--warn); }
         .status-done { color: var(--ok); }
+        .status-client-new { color: var(--accent); }
+        .status-client-processing { color: var(--warn); }
+        .status-client-rejected { color: var(--danger); }
+        .status-client-client { color: var(--ok); }
+        .status-deal-kp { color: var(--accent-2); }
+        .status-deal-dev { color: var(--warn); }
+        .status-deal-check { color: var(--accent); }
+        .status-deal-done { color: var(--ok); }
+        .status-deal-fix { color: var(--danger); }
+
+        .tree {
+            border: 1px solid var(--stroke);
+            border-radius: 12px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .tree-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 4px;
+            border-bottom: 1px dashed rgba(255,255,255,0.08);
+        }
+        .tree-row:last-child { border-bottom: none; }
+        .tree-toggle {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: 1px solid var(--stroke);
+            background: transparent;
+            color: var(--text);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .tree-title { font-weight: 600; }
+        .tree-meta { color: var(--muted); font-size: 12px; }
+        .tree-children { margin-left: 24px; }
+
+        .nav-sub-tree .tree {
+            border: none;
+            padding: 0;
+            background: transparent;
+        }
+        .nav-sub-tree .tree-row {
+            padding: 4px 0;
+            border-bottom: none;
+        }
+        .nav-sub-tree .tree-toggle {
+            width: 20px;
+            height: 20px;
+            border-radius: 5px;
+        }
+        .nav-sub-tree .tree-title { font-weight: 500; }
+        .nav-sub-tree .tree-meta { font-size: 11px; }
 
         .row { margin: 10px 0; }
         .error { color: var(--danger); }
@@ -207,6 +502,10 @@
             justify-content: center;
             background: rgba(0,0,0,0.5);
             z-index: 50;
+            pointer-events: auto;
+        }
+        #loadingModal {
+            pointer-events: none;
         }
         .modal-card {
             width: min(520px, 92vw);
@@ -220,6 +519,39 @@
             font-size: 16px;
         }
         .modal-row { margin: 8px 0; }
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .profile-section {
+            border: 1px solid var(--stroke);
+            border-radius: 12px;
+            padding: 10px;
+            background: rgba(20, 90, 50, 0.04);
+        }
+        .profile-title {
+            font-size: 13px;
+            margin: 0 0 6px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .profile-list {
+            display: grid;
+            gap: 6px;
+            font-size: 13px;
+        }
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            border: 1px solid var(--stroke);
+            background: rgba(255,255,255,0.6);
+            font-size: 11px;
+        }
         .input {
             width: 100%;
             background: transparent;
@@ -234,60 +566,391 @@
             gap: 6px;
             flex-wrap: wrap;
         }
+        .table-wrap {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .payments-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .payments-list {
+            display: grid;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .payment-card {
+            border: 1px solid var(--stroke);
+            border-radius: 14px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.6);
+            display: grid;
+            gap: 6px;
+        }
+
+        .payment-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .payment-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .picker-modal {
+            align-items: stretch;
+        }
+
+        .picker-card {
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .picker-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .picker-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .picker-search {
+            border: 1px solid var(--stroke);
+            border-radius: 10px;
+            padding: 8px 10px;
+            font-size: 13px;
+            background: rgba(255,255,255,0.7);
+        }
+
+        .picker-tabs {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .picker-tab {
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--stroke);
+            background: rgba(20, 90, 50, 0.06);
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .picker-tab.active {
+            border-color: rgba(20, 90, 50, 0.5);
+            color: var(--color-primary-dark);
+        }
+
+        .picker-list {
+            display: grid;
+            gap: 8px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+
+        .picker-item {
+            border: 1px solid var(--stroke);
+            border-radius: 12px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            display: grid;
+            gap: 2px;
+        }
+
+        .picker-item:hover {
+            border-color: rgba(20, 90, 50, 0.35);
+            background: rgba(127, 217, 181, 0.18);
+        }
+
+        .picker-sub {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .form-row {
+            display: grid;
+            gap: 6px;
+        }
+
+        .radio-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-size: 13px;
+        }
+
+        .file-note {
+            font-size: 12px;
+            color: var(--muted);
+        }
 
         @media (max-width: 700px) {
+            .app { padding: 10px; }
+            .sidebar { top: 10px; left: 10px; height: calc(100vh - 20px); width: calc(100vw - 20px); }
             .title { font-size: 24px; }
             .table th, .table td { font-size: 12px; }
+        }
+        @media (max-width: 600px) {
+            .bg-layer {
+                background:
+                    radial-gradient(600px 400px at 50% -10%, rgba(127,217,181,0.35), transparent 60%),
+                    linear-gradient(180deg, #F4F8F4 0%, #EEF5F0 100%);
+            }
         }
     </style>
 </head>
 <body>
-    <div class="shell">
-        <div class="hero">
-            <h1 class="title">Telegram CRM</h1>
-            <div class="meta">
-                <span id="roleInfo">Роль: загрузка...</span>
+    <div class="bg-layer"></div>
+    <div class="app">
+        <div class="modal" id="loadingModal" style="display:none;">
+            <div class="modal-card" style="text-align:center;">
+                <div style="font-size:16px;margin-bottom:6px;">Загрузка...</div>
+                <div style="color:var(--muted);font-size:12px;">Пожалуйста, подождите</div>
             </div>
         </div>
-
-        <div class="grid">
-            <div class="panel">
-                <div class="toolbar" id="adminActions" style="display:none;">
-                    <button class="btn tab active" id="tabProjects" onclick="showTab('projects')">Проекты</button>
-                    <button class="btn tab" id="tabClients" onclick="showTab('clients')">Клиенты</button>
-                    <button class="btn primary" onclick="createInvite()">Пригласить разработчика</button>
-                    <button class="btn danger" onclick="deactivateUser()">Деактивировать пользователя</button>
+        <div class="backdrop" id="sidebarBackdrop" onclick="toggleSidebar(false)"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <div class="brand-badge">AC</div>
+                <h2 class="brand-title">ALELU CONSULTING</h2>
+            </div>
+            <nav class="nav">
+                <div class="nav-group" id="navTeamGroup">
+                    <div class="nav-row">
+                        <button class="nav-item active" id="navTeam" onclick="showSection('team')">Команда</button>
+                        <button class="nav-arrow-btn" type="button" onclick="toggleNavGroup(event, 'navTeamGroup'); return false;" aria-label="Развернуть Команда">
+                            <span class="nav-arrow-icon"></span>
+                        </button>
+                    </div>
+                    <div class="nav-sub">
+                        <button class="nav-item" id="navTeamInvite" onclick="showSection('team_invite')">Пригласить разработчика</button>
+                    </div>
                 </div>
+                <div class="nav-group" id="navClientsGroup">
+                    <div class="nav-row">
+                        <button class="nav-item" id="navClients" onclick="showSection('clients')">Клиенты</button>
+                        <button class="nav-arrow-btn" type="button" onclick="toggleNavGroup(event, 'navClientsGroup'); return false;" aria-label="Развернуть Клиенты">
+                            <span class="nav-arrow-icon"></span>
+                        </button>
+                    </div>
+                    <div class="nav-sub">
+                        <button class="nav-item" id="navClientsInvite" onclick="showSection('clients_invite')">Пригласить клиента</button>
+                        <button class="nav-item" id="navDeals" onclick="selectedProjectFilter=null;showSection('deals')">Сделки</button>
+                        <button class="nav-item" id="navProjects" onclick="showSection('projects')">Проекты</button>
+                    </div>
+                </div>
+                <button class="nav-item" id="navFinance" onclick="showSection('finance')">Оплаты</button>
+            </nav>
+            <div class="nav-meta">
+                <div id="roleInfo">Роль: загрузка...</div>
+            </div>
+        </aside>
+
+        <main class="main">
+            <div class="topbar">
+                <button class="burger" onclick="toggleSidebar(true)" aria-label="Открыть меню">
+                    <span class="burger-lines">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+                </button>
+                <div class="brand">
+                    <div class="brand-badge">AC</div>
+                    <h2 class="brand-title">ALELU CONSULTING</h2>
+                </div>
+            </div>
+            <div class="hero">
+                <h1 class="title">ALELU CONSULTING</h1>
+                <div class="meta">
+                    <span>Управление проектами в Telegram</span>
+                </div>
+            </div>
+
+            <div class="panel">
                 <div class="row error" id="errorBox" style="display:none;"></div>
                 <div class="row success" id="successBox" style="display:none;"></div>
-                <table id="projectsTable" class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Код</th>
-                    <th>Статус</th>
-                    <th>Группа</th>
-                    <th>Клиент</th>
-                    <th>Действия</th>
-                </tr>
-            </thead>
-            <tbody id="projectsBody"></tbody>
-        </table>
-        <table id="clientsTable" class="table" style="display:none;">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Имя</th>
-                    <th>Username</th>
-                    <th>Активен</th>
-                    <th>Создан</th>
-                    <th>Действия</th>
-                </tr>
-            </thead>
-            <tbody id="clientsBody"></tbody>
-        </table>
+
+                <section id="section-team">
+                    <h3 style="margin:0 0 10px;">Команда</h3>
+                    <div class="row" id="teamEmpty" style="display:none;">Пока нет сотрудников</div>
+                    <div class="table-wrap">
+                        <table id="teamTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Имя</th>
+                                <th>Username</th>
+                                <th>Роль</th>
+                                <th>Активен</th>
+                                <th>Создан</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teamBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="section-team-invite" style="display:none;">
+                    <h3 style="margin:0 0 10px;">Пригласительные ссылки разработчикам</h3>
+                    <div class="row" id="teamInviteBlock">
+                        <div class="toolbar">
+                            <button class="btn primary" onclick="createDevInvite()">Создать новую ссылку</button>
+                        </div>
+                        <div class="row">
+                            Ссылка появится в истории ниже. Нажмите “Отправить”, чтобы отправить разработчику.
+                        </div>
+                        <div class="table-wrap">
+                            <table id="devInvitesTable" class="table">
+                            <thead>
+                                <tr>
+                                    <th>Ссылка</th>
+                                    <th>Истекает</th>
+                                    <th>Использована</th>
+                <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="devInvitesBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row" id="teamEmptyBlock" style="display:none;">
+                        Раздел доступен только администратору.
+                    </div>
+                </section>
+
+                <section id="section-projects" style="display:none;">
+                    <div class="row" id="projectsEmpty" style="display:none;">
+                        Раздел проектов будет доступен позже.
+                    </div>
+                    <div class="table-wrap">
+                        <table id="projectsTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Код</th>
+                                <th>Группа</th>
+                                <th>Сделки</th>
+                                <th>Разработчики</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projectsBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="section-deals" style="display:none;">
+                    <div class="row">
+                        <div class="toolbar" style="width:100%;justify-content:space-between;gap:10px;">
+                            <input class="input" id="dealSearch" placeholder="Поиск сделки: клиент, проект, статус" oninput="filterDeals()" autocomplete="off" spellcheck="false" />
+                            <button class="btn primary" id="addDealBtn" onclick="openDealModal()">➕ Добавить сделку</button>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table id="dealsTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Сделка</th>
+                                <th>Проект</th>
+                                <th>Клиент</th>
+                                <th>Статус</th>
+                                <th>Обновлено</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dealsBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="section-clients-invite" style="display:none;">
+                    <h3 style="margin:0 0 10px;">Пригласительные ссылки</h3>
+                    <div class="row">
+                        <div class="toolbar">
+                            <button class="btn primary" onclick="createClientInvite()">Создать новую ссылку</button>
+                        </div>
+                        <div class="row" id="inviteHelp">
+                            Ссылка появится в истории ниже. Нажмите “Отправить”, чтобы отправить клиенту.
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table id="clientInvitesTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>Ссылка</th>
+                                <th>Истекает</th>
+                                <th>Использована</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientInvitesBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="section-clients" style="display:none;">
+                    <div class="row">
+                        <input class="input" id="clientSearch" placeholder="Быстрый поиск: имя, username, id" oninput="filterClients()" autocomplete="off" spellcheck="false" />
+                    </div>
+                    <div class="table-wrap">
+                        <table id="clientsTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Имя</th>
+                                <th>Username</th>
+                                <th>Статус</th>
+                                <th>Активен</th>
+                                <th>Создан</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientsBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="section-finance" style="display:none;">
+                    <div class="payments-header">
+                        <h3 style="margin:0;">Оплаты</h3>
+                        <button class="btn primary" id="addPaymentBtn" onclick="openPayerPicker()">➕ Добавить оплату</button>
+                    </div>
+                    <div class="row" id="paymentsEmpty" style="display:none;">Платежей пока нет.</div>
+                    <div class="payments-list" id="paymentsList"></div>
+                </section>
             </div>
-        </div>
+        </main>
     </div>
     <div class="modal" id="renameModal">
         <div class="modal-card">
@@ -323,18 +986,280 @@
             </div>
         </div>
     </div>
+    <div class="modal" id="dealModal">
+        <div class="modal-card">
+            <h3 id="dealModalTitle">Новая сделка</h3>
+            <div class="modal-row">
+                <label>Проект</label>
+                <select class="select" id="dealProjectSelect"></select>
+            </div>
+            <div class="modal-row">
+                <label>Клиент</label>
+                <select class="select" id="dealClientSelect"></select>
+            </div>
+            <div class="modal-row">
+                <label>Разработчик</label>
+                <select class="select" id="dealDeveloperSelect"></select>
+            </div>
+            <div class="modal-row">
+                <label>Название сделки</label>
+                <input class="input" id="dealTitleInput" placeholder="Например: Разработка сайта" />
+            </div>
+            <div class="modal-row">
+                <label>Статус</label>
+                <select class="select" id="dealStatusSelect"></select>
+            </div>
+            <div class="modal-row">
+                <label>Сумма</label>
+                <input class="input" id="dealPaymentAmount" placeholder="Например: 15000" />
+            </div>
+            <div class="modal-row">
+                <label>Валюта</label>
+                <select class="select" id="dealPaymentCurrency">
+                    <option value="RUB">RUB</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                </select>
+            </div>
+            <div class="modal-row">
+                <label>Тип оплаты</label>
+                <select class="select" id="dealPaymentType">
+                    <option value="prepay">Предоплата</option>
+                    <option value="stage">Оплата этапа</option>
+                    <option value="final">Финальная оплата</option>
+                </select>
+            </div>
+            <div class="modal-row">
+                <label>Источник</label>
+                <select class="select" id="dealPaymentSource">
+                    <option value="transfer">Перевод</option>
+                    <option value="sbp">СБП</option>
+                    <option value="cash">Наличные</option>
+                    <option value="contract">Договор</option>
+                </select>
+            </div>
+            <div class="modal-row">
+                <label>Этап</label>
+                <select class="select" id="dealPaymentStage"></select>
+            </div>
+            <div class="toolbar" style="margin-top:10px;">
+                <button class="btn" onclick="closeDealModal()">Отмена</button>
+                <button class="btn primary" id="dealSubmitBtn" onclick="submitDeal()">Создать</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="clientProfileModal">
+        <div class="modal-card" style="width:min(760px,92vw);max-height:85vh;overflow:auto;">
+            <h3>Карточка клиента</h3>
+            <div id="clientProfileBody" class="profile-grid">
+                <div class="profile-section">Загрузка...</div>
+            </div>
+            <div class="toolbar" style="margin-top:10px;">
+                <button class="btn" onclick="closeClientProfile()">Закрыть</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="dialogModal">
+        <div class="modal-card">
+            <h3 id="dialogTitle">Сообщение</h3>
+            <div class="modal-row" id="dialogMessage"></div>
+            <div class="modal-row" id="dialogInputRow" style="display:none;">
+                <input class="input" id="dialogInput" />
+            </div>
+            <div class="toolbar" style="margin-top:10px;">
+                <button class="btn" id="dialogCancel" style="display:none;">Отмена</button>
+                <button class="btn primary" id="dialogConfirm">Ок</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal picker-modal" id="payerPickerModal">
+        <div class="modal-card picker-card">
+            <div class="picker-header">
+                <div class="picker-title">Выбор плательщика</div>
+                <button class="btn" onclick="closePayerPicker()">Закрыть</button>
+            </div>
+            <input class="picker-search" id="payerSearch" type="text" placeholder="Поиск по имени или чату" oninput="filterPayers()"/>
+            <div class="picker-tabs">
+                <button class="picker-tab active" id="payerTabRecent" onclick="switchPayerTab('recent')">Недавние</button>
+                <button class="picker-tab" id="payerTabClients" onclick="switchPayerTab('clients')">Клиенты</button>
+                <button class="picker-tab" id="payerTabGroups" onclick="switchPayerTab('groups')">Группы</button>
+            </div>
+            <div class="picker-list" id="payerPickerList"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="paymentFormModal">
+        <div class="modal-card">
+            <h3 style="margin-bottom:6px;">Фиксация оплаты</h3>
+            <div class="form-grid">
+                <div class="form-row">
+                    <div style="font-size:12px;color:var(--muted);">Плательщик</div>
+                    <div class="chip" id="paymentPayerLabel">—</div>
+                </div>
+                <div class="form-row">
+                    <label class="profile-title" style="margin:0;">Проект</label>
+                    <select class="select" id="paymentProject"></select>
+                </div>
+                <div class="form-row">
+                    <label class="profile-title" style="margin:0;">Сделка</label>
+                    <select class="select" id="paymentDeal"></select>
+                </div>
+                <div class="form-row">
+                    <label class="profile-title" style="margin:0;">Этап</label>
+                    <select class="select" id="paymentStage"></select>
+                </div>
+                <div class="form-row">
+                    <label class="profile-title" style="margin:0;">Сумма</label>
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                        <input class="input" id="paymentAmount" type="text" placeholder="Например: 50 000"/>
+                        <select class="select" id="paymentCurrency">
+                            <option value="RUB">₽</option>
+                            <option value="USD">$</option>
+                            <option value="EUR">€</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label class="profile-title" style="margin:0;">Тип</label>
+                    <div class="radio-row">
+                        <label><input type="radio" name="paymentType" value="prepay" checked/> Предоплата</label>
+                        <label><input type="radio" name="paymentType" value="stage"/> Этап</label>
+                        <label><input type="radio" name="paymentType" value="final"/> Финальный платёж</label>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label class="profile-title" style="margin:0;">Источник</label>
+                    <div class="radio-row">
+                        <label><input type="radio" name="paymentSource" value="cash" checked/> Нал</label>
+                        <label><input type="radio" name="paymentSource" value="transfer"/> Перевод</label>
+                        <label><input type="radio" name="paymentSource" value="sbp"/> СБП</label>
+                        <label><input type="radio" name="paymentSource" value="contract"/> Договор</label>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label class="profile-title" style="margin:0;">Комментарий</label>
+                    <textarea class="input" id="paymentComment" rows="3" placeholder="Опционально"></textarea>
+                </div>
+                <div class="form-row">
+                    <label class="profile-title" style="margin:0;">Документ</label>
+                    <input class="input" id="paymentDocument" type="file"/>
+                    <div class="file-note">Пока сохраняем только имя файла.</div>
+                </div>
+            </div>
+            <div class="row" style="display:flex;gap:8px;justify-content:flex-end;">
+                <button class="btn" onclick="closePaymentForm()">Отмена</button>
+                <button class="btn primary" onclick="submitPayment()">✅ Зафиксировать оплату</button>
+            </div>
+        </div>
+    </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        const API_BASE_URL = "http://localhost:8000";
-        const STATUS_LABELS = {
-            "NEW_CLIENT": "новый клиент",
-            "IN_PROGRESS": "в работе",
-            "DONE": "сдан проект"
+        const BOT_USERNAME = new URLSearchParams(window.location.search).get("bot")
+            || "MyAvitoTablesBot";
+        const API_BASE_URL = new URLSearchParams(window.location.search).get("api")
+            || "https://d5df189hbtaa39lvp14l.lievo6ut.apigw.yandexcloud.net";
+        const CLIENT_STATUS_LABELS = {
+            "NEW": "Новый клиент",
+            "PROCESSING": "Обработка",
+            "REJECTED": "Отказ",
+            "CLIENT": "Клиент"
         };
-        let clientsCache = [];
+        const DEAL_STATUS_LABELS = {
+            "KP_SENT": "Направлено КП",
+            "DEV": "В разработке",
+            "CHECK": "На проверке",
+            "DONE": "Работа сдана",
+            "FIX": "Доработка"
+        };
+        const ROLE_LABELS = {
+            "admin": "Админ",
+            "owner": "Владелец",
+            "developer": "Разработчик",
+            "client": "Клиент"
+        };
+        const CLIENT_STATUS_ORDER = ["NEW", "PROCESSING", "REJECTED", "CLIENT"];
+        const DEAL_STATUS_ORDER = ["KP_SENT", "DEV", "CHECK", "DONE", "FIX"];
+        let projectsCache = null;
+        let dealsCache = null;
+        let clientsCache = null;
+        let teamCache = null;
+        let paymentsCache = null;
+        let expandedClients = new Set();
+        let expandedProjects = new Set();
+        let payersCache = { clients: [], groups: [], recent: [] };
+        let selectedPayer = null;
+        let payerTab = "recent";
         let renameProjectId = null;
         let editClientId = null;
+        let editingDealId = null;
+        let selectedProjectFilter = null;
+        let currentRole = "client";
+        let isInitializing = false;
+
+        function toggleNavGroup(event, groupId) {
+            event.preventDefault();
+            event.stopPropagation();
+            const group = document.getElementById(groupId);
+            if (!group) return;
+            group.classList.toggle("open");
+        }
+
+        function roleLabel(role) {
+            return ROLE_LABELS[String(role || "").toLowerCase()] || role || "";
+        }
+
+        function clientStatusLabel(status) {
+            return CLIENT_STATUS_LABELS[status] || status || "—";
+        }
+
+        function dealStatusLabel(status) {
+            return DEAL_STATUS_LABELS[status] || status || "—";
+        }
+
+        function clientStatusClass(status) {
+            if (status === "NEW") return "status-client-new";
+            if (status === "PROCESSING") return "status-client-processing";
+            if (status === "REJECTED") return "status-client-rejected";
+            if (status === "CLIENT") return "status-client-client";
+            return "";
+        }
+
+        function dealStatusClass(status) {
+            if (status === "KP_SENT") return "status-deal-kp";
+            if (status === "DEV") return "status-deal-dev";
+            if (status === "CHECK") return "status-deal-check";
+            if (status === "DONE") return "status-deal-done";
+            if (status === "FIX") return "status-deal-fix";
+            return "";
+        }
+
+        function escapeHtml(value) {
+            return String(value || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function formatAmount(amount, currency = "RUB") {
+            const num = Number(amount || 0);
+            const formatted = num.toLocaleString("ru-RU");
+            const symbol = currency === "RUB" ? "₽" : currency === "USD" ? "$" : currency === "EUR" ? "€" : currency;
+            return `${formatted} ${symbol}`;
+        }
+
+        function paymentTypeLabel(value) {
+            const map = { prepay: "Предоплата", stage: "Этап", final: "Финальный платёж" };
+            return map[value] || value || "—";
+        }
+
+        function paymentSourceLabel(value) {
+            const map = { cash: "Нал", transfer: "Перевод", sbp: "СБП", contract: "Договор" };
+            return map[value] || value || "—";
+        }
 
         function showError(msg) {
             const el = document.getElementById("errorBox");
@@ -349,167 +1274,1159 @@
             setTimeout(() => { el.style.display = "none"; }, 2000);
         }
 
-        async function api(path, data) {
+        function setLoading(on) {
+            const modal = document.getElementById("loadingModal");
+            if (!modal) return;
+            modal.style.display = on ? "flex" : "none";
+        }
+
+        function renderTableLoading(tbodyId, colspan, text) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td colspan="${colspan}">${text || "Загрузка..."}</td>`;
+            tbody.replaceChildren(tr);
+        }
+
+        async function api(path, data, timeoutMs = 12000) {
             try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
                 const res = await fetch(API_BASE_URL + path, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(data),
+                    signal: controller.signal
                 });
+                clearTimeout(timeoutId);
                 return res.json();
             } catch (e) {
+                if (e && e.name === "AbortError") {
+                    showError("Превышено время ожидания ответа от сервера.");
+                    return { ok: false, error: "timeout" };
+                }
                 showError("Не удалось подключиться к API. Проверь HTTPS и адрес API.");
                 return { ok: false, error: "network_error" };
             }
         }
 
-        async function loadProjects(role) {
+        async function loadProjects(role, force = false) {
+            if (projectsCache && !force) {
+                return projectsCache;
+            }
             const initData = window.Telegram?.WebApp?.initData || "";
-            const endpoint = role === "admin" ? "/api/admin/projects" : "/api/projects";
+            const endpoint = (role === "admin" || role === "owner") ? "/api/admin/projects" : "/api/projects";
             const data = await api(endpoint, { initData });
             if (!data.ok) {
                 showError(data.error || "Ошибка загрузки проектов");
-                return;
+                return [];
             }
-            renderProjects(data.projects || [], role);
+            projectsCache = data.projects || [];
+            renderClientHierarchy();
+            return projectsCache;
         }
 
-        async function loadClients() {
+        async function loadDeals(force = false) {
+            if (dealsCache && !force) {
+                return dealsCache;
+            }
+            const initData = window.Telegram?.WebApp?.initData || "";
+            const data = await api("/api/deals/list", { initData });
+            if (!data.ok) {
+                showError(data.error || "Ошибка загрузки сделок");
+                return [];
+            }
+            dealsCache = data.deals || [];
+            renderClientHierarchy();
+            return dealsCache;
+        }
+
+        async function loadDealsByProject(projectId) {
+            const initData = window.Telegram?.WebApp?.initData || "";
+            const data = await api("/api/deals/by-project", { initData, project_id: projectId });
+            if (!data.ok) {
+                showError(data.error || "Ошибка загрузки сделок");
+                return [];
+            }
+            return data.deals || [];
+        }
+
+        async function loadClients(force = false) {
+            if (window.USER_ROLE === "developer") return clientsCache || [];
+            if (clientsCache && !force) {
+                return clientsCache;
+            }
             const initData = window.Telegram?.WebApp?.initData || "";
             const data = await api("/api/admin/clients", { initData });
             if (!data.ok) {
                 showError(data.error || "Ошибка загрузки клиентов");
-                return;
+                return [];
             }
             clientsCache = data.clients || [];
-            renderClients(data.clients || []);
+            renderClientHierarchy();
+            return clientsCache;
+        }
+
+        async function loadTeam(force = false) {
+            if (teamCache && !force) {
+                return teamCache;
+            }
+            const initData = window.Telegram?.WebApp?.initData || "";
+            const data = await api("/api/admin/team", { initData });
+            if (!data.ok) {
+                showError(data.error || "Ошибка загрузки команды");
+                return [];
+            }
+            teamCache = data.team || [];
+            return teamCache;
+        }
+
+        async function loadPayments(force = false) {
+            if (paymentsCache && !force) {
+                return paymentsCache;
+            }
+            const initData = window.Telegram?.WebApp?.initData || "";
+            const data = await api("/api/finance/payments/list", { initData });
+            if (!data.ok) {
+                showError(data.error || "Ошибка загрузки оплат");
+                return [];
+            }
+            paymentsCache = data.payments || [];
+            return paymentsCache;
+        }
+
+        async function loadPayers(force = false) {
+            if (payersCache && payersCache.clients.length && !force) {
+                return payersCache;
+            }
+            const initData = window.Telegram?.WebApp?.initData || "";
+            const data = await api("/api/finance/payers", { initData });
+            if (!data.ok) {
+                showError(data.error || "Ошибка загрузки плательщиков");
+                return { clients: [], groups: [], recent: [] };
+            }
+            payersCache = {
+                clients: data.clients || [],
+                groups: data.groups || [],
+                recent: data.recent || []
+            };
+            return payersCache;
+        }
+
+        async function loadStages(projectId) {
+            const initData = window.Telegram?.WebApp?.initData || "";
+            const data = await api("/api/finance/stages", { initData, project_id: projectId });
+            if (!data.ok) {
+                showError(data.error || "Ошибка загрузки этапов");
+                return [];
+            }
+            return data.stages || [];
+        }
+
+        async function loadProjectDevelopers(projectId) {
+            const initData = window.Telegram?.WebApp?.initData || "";
+            const data = await api("/api/projects/developers", { initData, project_id: projectId });
+            if (!data.ok) {
+                showError(data.error || "Ошибка загрузки разработчиков");
+                return [];
+            }
+            return data.developers || [];
         }
 
         function renderProjects(projects, role) {
             const tbody = document.getElementById("projectsBody");
-            tbody.innerHTML = "";
+            const frag = document.createDocumentFragment();
             if (!projects.length) {
                 const tr = document.createElement("tr");
                 tr.innerHTML = `<td colspan="6">Пока нет проектов</td>`;
-                tbody.appendChild(tr);
+                frag.appendChild(tr);
+                tbody.replaceChildren(frag);
                 return;
             }
             projects.forEach(p => {
-                const statusClass = p.status === "NEW_CLIENT" ? "status-new" : (p.status === "IN_PROGRESS" ? "status-work" : "status-done");
+                const projectDeals = (dealsCache || []).filter(d => d.project_id === p.project_id);
+                const dealCount = projectDeals.length;
+                const dealBadges = renderDealBadges(projectDeals);
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
                     <td>${p.project_id}</td>
-                    <td class="mono">${p.proj_code || ""}</td>
-                    <td><span class="badge ${statusClass}">${STATUS_LABELS[p.status] || p.status}</span></td>
-                    <td class="cell-wrap">${p.group_title || "—"}</td>
-                    <td>${formatClient(p.client_id)}</td>
+                    <td class="mono">${escapeHtml(p.proj_code || "")}</td>
+                    <td class="cell-wrap">${escapeHtml(p.group_title || "—")}</td>
+                    <td>${dealCount ? `${dealCount} ${dealBadges}` : "—"}</td>
+                    <td>—</td>
                     <td class="actions"></td>
                 `;
                 const actions = tr.querySelector(".actions");
-                if (role === "admin" || role === "developer") {
-                    const sel = document.createElement("select");
-                    sel.className = "select";
-                    ["NEW_CLIENT","IN_PROGRESS","DONE"].forEach(s => {
-                        const opt = document.createElement("option");
-                        opt.value = s;
-                        opt.textContent = STATUS_LABELS[s];
-                        if (s === p.status) opt.selected = true;
-                        sel.appendChild(opt);
-                    });
-                    const btn = document.createElement("button");
-                    btn.className = "btn";
-                    btn.textContent = "Сменить статус";
-                    btn.onclick = async () => {
-                        const initData = window.Telegram?.WebApp?.initData || "";
-                        const res = await api("/api/projects/status", { initData, project_id: p.project_id, status: sel.value });
-                        if (!res.ok) return showError(res.error || "Ошибка");
-                        showSuccess("Статус обновлен");
-                        loadProjects(role);
-                    };
-                    actions.appendChild(sel);
-                    actions.appendChild(btn);
-                }
-                if (role === "admin") {
-                    const archiveBtn = document.createElement("button");
-                    archiveBtn.className = "btn";
-                    archiveBtn.textContent = "Архивировать";
-                    archiveBtn.onclick = async () => {
-                        const initData = window.Telegram?.WebApp?.initData || "";
-                        const res = await api("/api/admin/archive", { initData, project_id: p.project_id });
-                        if (!res.ok) return showError(res.error || "Ошибка");
-                        showSuccess("Проект архивирован");
-                        loadProjects(role);
-                    };
-                    actions.appendChild(archiveBtn);
+                if (role === "admin" || role === "owner" || role === "developer") {
+                    const select = document.createElement("select");
+                    select.className = "select";
+                    select.innerHTML = `<option value="" selected disabled>Действия</option>`;
 
-                    const renameBtn = document.createElement("button");
-                    renameBtn.className = "btn";
-                    renameBtn.textContent = "Переименовать";
-                    renameBtn.onclick = async () => {
-                        openRenameModal(p.project_id);
+                    const optDeals = document.createElement("option");
+                    optDeals.value = "open-deals";
+                    optDeals.textContent = "Открыть сделки";
+                    select.appendChild(optDeals);
+
+                    if (role === "admin") {
+                        const optRename = document.createElement("option");
+                        optRename.value = "rename";
+                        optRename.textContent = "Переименовать";
+                        select.appendChild(optRename);
+
+                        const optArchive = document.createElement("option");
+                        optArchive.value = "archive";
+                        optArchive.textContent = "Архивировать";
+                        select.appendChild(optArchive);
+                    }
+
+                    select.addEventListener("click", (event) => event.stopPropagation());
+                    select.onchange = async () => {
+                        const val = select.value;
+                        select.selectedIndex = 0;
+
+                        if (!val) return;
+                        if (val === "open-deals") {
+                            selectedProjectFilter = p.project_id;
+                            showSection("deals");
+                            return;
+                        }
+
+                        if (val === "rename") {
+                            openRenameModal(p.project_id);
+                            return;
+                        }
+
+                        if (val === "archive") {
+                            const initData = window.Telegram?.WebApp?.initData || "";
+                            const prev = projects.slice();
+                            const next = projects.filter(x => x.project_id !== p.project_id);
+                            projectsCache = next;
+                            renderProjects(next, role);
+                            api("/api/admin/archive", { initData, project_id: p.project_id }).then(res => {
+                                if (!res.ok) {
+                                    projectsCache = prev;
+                                    renderProjects(prev, role);
+                                    showError(res.error || "Ошибка");
+                                    return;
+                                }
+                                showSuccess("Проект архивирован");
+                            });
+                        }
                     };
-                    actions.appendChild(renameBtn);
+
+                    actions.appendChild(select);
                 }
-                tbody.appendChild(tr);
+                frag.appendChild(tr);
             });
+            tbody.replaceChildren(frag);
+        }
+
+        function renderDealBadges(deals) {
+            if (!deals || !deals.length) return "";
+            const statuses = Array.from(new Set(deals.map(d => d.deal_status).filter(Boolean)));
+            return statuses.map(s => `<span class="badge ${dealStatusClass(s)}">${dealStatusLabel(s)}</span>`).join(" ");
+        }
+
+        function renderDeals(deals, role) {
+            const tbody = document.getElementById("dealsBody");
+            const frag = document.createDocumentFragment();
+            const filtered = selectedProjectFilter
+                ? deals.filter(d => d.project_id === selectedProjectFilter)
+                : deals;
+            if (!filtered.length) {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td colspan="7">Сделок пока нет</td>`;
+                frag.appendChild(tr);
+                tbody.replaceChildren(frag);
+                return;
+            }
+            filtered.forEach(d => {
+                const project = (projectsCache || []).find(p => p.project_id === d.project_id) || {};
+                const client = (clientsCache || []).find(c => c.user_id === d.client_id) || {};
+                const projectLabel = d.project_id
+                    ? (project.group_title || project.proj_code || d.project_id)
+                    : "—";
+                const statusClass = dealStatusClass(d.deal_status);
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${d.deal_id}</td>
+                    <td>${escapeHtml(d.title || "Сделка")}</td>
+                    <td class="cell-wrap">${escapeHtml(projectLabel)}</td>
+                    <td>${escapeHtml(client.first_name || (client.username ? "@" + client.username : d.client_id || "—"))}</td>
+                    <td><span class="badge ${statusClass}">${dealStatusLabel(d.deal_status)}</span></td>
+                    <td>${escapeHtml(d.updated_at || d.created_at || "—")}</td>
+                    <td class="actions"></td>
+                `;
+                const actions = tr.querySelector(".actions");
+                if (role === "admin" || role === "owner" || role === "developer") {
+                    const select = document.createElement("select");
+                    select.className = "select";
+                    select.innerHTML = `<option value="" selected disabled>Действия</option>`;
+                    if (role === "admin" || role === "owner") {
+                        const editOpt = document.createElement("option");
+                        editOpt.value = "edit";
+                        editOpt.textContent = "Редактировать";
+                        select.appendChild(editOpt);
+                        const payOpt = document.createElement("option");
+                        payOpt.value = "pay";
+                        payOpt.textContent = "Внести оплату";
+                        select.appendChild(payOpt);
+                    }
+                    DEAL_STATUS_ORDER.forEach(s => {
+                        const opt = document.createElement("option");
+                        opt.value = `status:${s}`;
+                        opt.textContent = `Статус → ${dealStatusLabel(s)}`;
+                        select.appendChild(opt);
+                    });
+                    select.addEventListener("click", (event) => event.stopPropagation());
+                    select.onchange = async () => {
+                        const val = select.value;
+                        select.selectedIndex = 0;
+                        if (!val) return;
+                        if (val === "edit") {
+                            await openDealModal(d);
+                            return;
+                        }
+                        if (val === "pay") {
+                            await openPaymentForm({ deal: d });
+                            return;
+                        }
+                        if (val.startsWith("status:")) {
+                            const nextStatus = val.split(":")[1];
+                            const note = await showPrompt("Комментарий (опционально):", "например: клиент вернул на доработку");
+                            const initData = window.Telegram?.WebApp?.initData || "";
+                            const prev = d.deal_status;
+                            d.deal_status = nextStatus;
+                            renderDeals(deals, role);
+                            const res = await api("/api/deals/status", { initData, deal_id: d.deal_id, status: nextStatus, note: note || "" });
+                            if (!res.ok) {
+                                d.deal_status = prev;
+                                renderDeals(deals, role);
+                                return showError(res.error || "Ошибка");
+                            }
+                            showSuccess("Статус сделки обновлен");
+                            dealsCache = null;
+                            loadDeals(true).then(data => {
+                                renderDeals(data || [], role);
+                                if (projectsCache) renderProjects(projectsCache, role);
+                            });
+                        }
+                    };
+                    actions.appendChild(select);
+                }
+                frag.appendChild(tr);
+            });
+            tbody.replaceChildren(frag);
         }
 
         function renderClients(clients) {
             const tbody = document.getElementById("clientsBody");
-            tbody.innerHTML = "";
+            const frag = document.createDocumentFragment();
             if (!clients.length) {
                 const tr = document.createElement("tr");
-                tr.innerHTML = `<td colspan="6">Клиентов пока нет</td>`;
-                tbody.appendChild(tr);
+                tr.innerHTML = `<td colspan="7">Клиентов пока нет</td>`;
+                frag.appendChild(tr);
+                tbody.replaceChildren(frag);
                 return;
             }
             clients.forEach(c => {
                 const tr = document.createElement("tr");
+                tr.classList.add("row-click");
+                const statusClass = clientStatusClass(c.client_status);
                 tr.innerHTML = `
                     <td>${c.user_id}</td>
-                    <td>${c.first_name || ""}</td>
-                    <td>${c.username ? "@" + c.username : ""}</td>
+                    <td>${escapeHtml(c.first_name || "")}</td>
+                    <td>${c.username ? "@" + escapeHtml(c.username) : ""}</td>
+                    <td><span class="badge ${statusClass}">${clientStatusLabel(c.client_status)}</span></td>
                     <td>${c.is_active ? "да" : "нет"}</td>
-                    <td>${c.created_at || ""}</td>
-                    <td class="inline-actions"></td>
+                    <td>${escapeHtml(c.created_at || "")}</td>
+                    <td></td>
                 `;
-                const actions = tr.querySelector(".inline-actions");
-                const editBtn = document.createElement("button");
-                editBtn.className = "btn";
-                editBtn.textContent = "Редактировать";
-                editBtn.onclick = () => openEditClientModal(c);
-                actions.appendChild(editBtn);
-
-                const delBtn = document.createElement("button");
-                delBtn.className = "btn danger";
-                delBtn.textContent = "Удалить";
-                delBtn.onclick = () => deleteClient(c);
-                actions.appendChild(delBtn);
-                tbody.appendChild(tr);
+            tr.addEventListener("click", (event) => {
+                if (event.target.closest("select, option, button, a")) return;
+                openClientProfile(c);
             });
+            const actionsCell = tr.lastElementChild;
+            const select = document.createElement("select");
+            select.className = "select";
+            let selectHtml = `<option value="" selected disabled>Действия</option>`;
+            if (currentRole === "admin" || currentRole === "owner") {
+                selectHtml += `<option value="status">Изменить статус</option>`;
+                selectHtml += `<option value="edit">Редактировать</option>`;
+                selectHtml += `<option value="delete">Удалить</option>`;
+            }
+            select.innerHTML = selectHtml;
+            select.addEventListener("click", (event) => event.stopPropagation());
+            select.onchange = async () => {
+                const val = select.value;
+                select.selectedIndex = 0;
+                if (val === "status") {
+                    const nextStatus = await showPrompt(
+                        "Введите статус клиента: NEW, PROCESSING, REJECTED, CLIENT",
+                        "Например: CLIENT"
+                    );
+                    if (!nextStatus) return;
+                    const status = String(nextStatus || "").trim().toUpperCase();
+                    if (!CLIENT_STATUS_LABELS[status]) {
+                        return showError("Неверный статус клиента");
+                    }
+                    const note = await showPrompt("Комментарий (опционально):", "например: отказ по бюджету");
+                    const initData = window.Telegram?.WebApp?.initData || "";
+                    const prev = c.client_status;
+                    c.client_status = status;
+                    renderClients(clients);
+                    const res = await api("/api/admin/clients/status", { initData, client_id: c.user_id, status, note: note || "" });
+                    if (!res.ok) {
+                        c.client_status = prev;
+                        renderClients(clients);
+                        return showError(res.error || "Ошибка");
+                    }
+                    showSuccess("Статус клиента обновлен");
+                    clientsCache = null;
+                    loadClients(true).then(data => renderClients(data || []));
+                    return;
+                }
+                if (val === "edit") openEditClientModal(c);
+                if (val === "delete") deleteClient(c);
+            };
+            actionsCell.appendChild(select);
+            frag.appendChild(tr);
+        });
+            tbody.replaceChildren(frag);
+        }
+
+        function toggleClientNode(clientId) {
+            if (expandedClients.has(clientId)) {
+                expandedClients.delete(clientId);
+            } else {
+                expandedClients.add(clientId);
+            }
+            renderClientHierarchy();
+        }
+
+        function toggleProjectNode(clientId, projectId) {
+            const key = `${clientId}:${projectId}`;
+            if (expandedProjects.has(key)) {
+                expandedProjects.delete(key);
+            } else {
+                expandedProjects.add(key);
+            }
+            renderClientHierarchy();
+        }
+
+        function renderClientHierarchy() {
+            const wrap = document.getElementById("navClientsHierarchy");
+            if (!wrap) return;
+            if (!(currentRole === "admin" || currentRole === "owner")) {
+                wrap.style.display = "none";
+                return;
+            }
+            const clients = Array.isArray(clientsCache) ? clientsCache : [];
+            if (!clients.length) {
+                wrap.style.display = "block";
+                wrap.innerHTML = `<div class="tree"><div class="tree-row"><div class="tree-title">Клиентов нет</div></div></div>`;
+                return;
+            }
+            const projectsById = {};
+            (projectsCache || []).forEach(p => { projectsById[p.project_id] = p; });
+            const deals = Array.isArray(dealsCache) ? dealsCache : [];
+            const dealsByClient = {};
+            deals.forEach(d => {
+                const cid = d.client_id;
+                if (!cid) return;
+                if (!dealsByClient[cid]) dealsByClient[cid] = [];
+                dealsByClient[cid].push(d);
+            });
+
+            let html = `<div class="tree">`;
+            clients.forEach(c => {
+                const cid = c.user_id;
+                const clientDeals = dealsByClient[cid] || [];
+                const projectIds = Array.from(new Set(clientDeals.map(d => d.project_id).filter(Boolean)));
+                const clientExpanded = expandedClients.has(cid);
+                const clientArrow = clientExpanded ? "▾" : "▸";
+                const clientLabel = c.first_name || (c.username ? `@${c.username}` : c.user_id);
+                html += `<div class="tree-row">
+                    <button class="tree-toggle" onclick="toggleClientNode(${cid})">${clientArrow}</button>
+                    <div class="tree-title">${escapeHtml(clientLabel)}</div>
+                    <div class="tree-meta">проекты: ${projectIds.length}, сделки: ${clientDeals.length}</div>
+                </div>`;
+                if (clientExpanded) {
+                    html += `<div class="tree-children">`;
+                    if (!projectIds.length) {
+                        html += `<div class="tree-row"><div class="tree-meta">Нет проектов</div></div>`;
+                    } else {
+                        projectIds.forEach(pid => {
+                            const proj = projectsById[pid] || {};
+                            const projLabel = proj.group_title || proj.proj_code || pid;
+                            const projKey = `${cid}:${pid}`;
+                            const projExpanded = expandedProjects.has(projKey);
+                            const projArrow = projExpanded ? "▾" : "▸";
+                            const projDeals = clientDeals.filter(d => Number(d.project_id) === Number(pid));
+                            html += `<div class="tree-row">
+                                <button class="tree-toggle" onclick="toggleProjectNode(${cid},${pid})">${projArrow}</button>
+                                <div class="tree-title">${escapeHtml(projLabel)}</div>
+                                <div class="tree-meta">сделки: ${projDeals.length}</div>
+                            </div>`;
+                            if (projExpanded) {
+                                html += `<div class="tree-children">`;
+                                if (!projDeals.length) {
+                                    html += `<div class="tree-row"><div class="tree-meta">Нет сделок</div></div>`;
+                                } else {
+                                    projDeals.forEach(d => {
+                                        const status = dealStatusLabel(d.deal_status);
+                                        const title = d.title || `Сделка #${d.deal_id}`;
+                                        html += `<div class="tree-row"><div class="tree-meta">${escapeHtml(title)} • ${escapeHtml(status)}</div></div>`;
+                                    });
+                                }
+                                html += `</div>`;
+                            }
+                        });
+                    }
+                    html += `</div>`;
+                }
+            });
+            html += `</div>`;
+            wrap.style.display = "block";
+            wrap.innerHTML = html;
+        }
+
+        function renderTeam(team) {
+            const tbody = document.getElementById("teamBody");
+            const empty = document.getElementById("teamEmpty");
+            const table = document.getElementById("teamTable");
+            const frag = document.createDocumentFragment();
+            if (!team.length) {
+                if (empty) empty.style.display = "block";
+                if (table) table.style.display = "none";
+                return;
+            }
+            if (empty) empty.style.display = "none";
+            if (table) table.style.display = "table";
+                team.forEach(t => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td>${t.user_id}</td>
+                        <td>${t.first_name || ""}</td>
+                        <td>${t.username ? "@" + t.username : ""}</td>
+                        <td>${roleLabel(t.role)}</td>
+                        <td>${t.is_active ? "да" : "нет"}</td>
+                        <td>${t.created_at || ""}</td>
+                        <td></td>
+                    `;
+                    const actionsCell = tr.lastElementChild;
+                    const select = document.createElement("select");
+                    select.className = "select";
+                    const roleLower = (t.role || "").toLowerCase();
+                    const isProtected = roleLower === "admin" || roleLower === "owner";
+                    const isActive = !!t.is_active;
+                    select.innerHTML = `
+                        <option value="" selected disabled>Действия</option>
+                        <option value="delete"${isProtected || !isActive ? " disabled" : ""}>Удалить</option>
+                    `;
+                select.onchange = () => {
+                    const val = select.value;
+                    select.selectedIndex = 0;
+                    if (val === "delete") deleteDeveloper(t);
+                };
+                actionsCell.appendChild(select);
+                frag.appendChild(tr);
+            });
+            tbody.replaceChildren(frag);
+        }
+
+        function filterClients() {
+            if (!Array.isArray(clientsCache)) return;
+            const q = (document.getElementById("clientSearch")?.value || "").toLowerCase().trim();
+            if (!q) {
+                renderClients(clientsCache);
+                return;
+            }
+            const filtered = clientsCache.filter(c => {
+                const id = String(c.user_id || "");
+                const name = (c.first_name || "").toLowerCase();
+                const username = (c.username || "").toLowerCase();
+                return id.includes(q) || name.includes(q) || username.includes(q);
+            });
+            renderClients(filtered);
+        }
+
+        function filterDeals() {
+            if (!Array.isArray(dealsCache)) return;
+            const q = (document.getElementById("dealSearch")?.value || "").toLowerCase().trim();
+            if (!q) {
+                renderDeals(dealsCache, currentRole);
+                return;
+            }
+            const filtered = dealsCache.filter(d => {
+                const id = String(d.deal_id || "");
+                const title = (d.title || "").toLowerCase();
+                const status = dealStatusLabel(d.deal_status).toLowerCase();
+                const project = (projectsCache || []).find(p => p.project_id === d.project_id) || {};
+                const projectLabel = (project.group_title || project.proj_code || "").toLowerCase();
+                const client = (clientsCache || []).find(c => c.user_id === d.client_id) || {};
+                const clientLabel = ((client.first_name || "") + " " + (client.username || "")).toLowerCase();
+                return id.includes(q) || title.includes(q) || status.includes(q) || projectLabel.includes(q) || clientLabel.includes(q);
+            });
+            renderDeals(filtered, currentRole);
+        }
+
+        function renderClientInvites(invites) {
+            const tbody = document.getElementById("clientInvitesBody");
+            const frag = document.createDocumentFragment();
+            if (!invites.length) {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td colspan="4">Пока нет ссылок</td>`;
+                frag.appendChild(tr);
+                tbody.replaceChildren(frag);
+                return;
+            }
+            invites.forEach(i => {
+                const link = `https://t.me/${BOT_USERNAME}?start=inv_${i.token}`;
+                const tr = document.createElement("tr");
+                tr.dataset.token = i.token;
+                tr.innerHTML = `
+                    <td class="mono">${link}</td>
+                    <td>${i.expires_at || "—"}</td>
+                    <td>${i.used_by ? "да" : "нет"}</td>
+                    <td></td>
+                `;
+                const actions = tr.lastElementChild;
+                const select = document.createElement("select");
+                select.className = "select";
+                select.innerHTML = `
+                    <option value="" selected disabled>Действия</option>
+                    <option value="send">Отправить</option>
+                    <option value="copy">Копировать</option>
+                    <option value="delete">Удалить</option>
+                `;
+                select.onchange = () => {
+                    const val = select.value;
+                    select.selectedIndex = 0;
+                    if (val === "send") shareInvite(link);
+                    if (val === "copy") copyInvite(link);
+                    if (val === "delete") deleteInvite(i.token);
+                };
+                actions.appendChild(select);
+                frag.appendChild(tr);
+            });
+            tbody.replaceChildren(frag);
+        }
+
+        function renderDevInvites(invites) {
+            const tbody = document.getElementById("devInvitesBody");
+            const frag = document.createDocumentFragment();
+            if (!invites.length) {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td colspan="4">Пока нет ссылок</td>`;
+                frag.appendChild(tr);
+                tbody.replaceChildren(frag);
+                return;
+            }
+            invites.forEach(i => {
+                const link = `https://t.me/${BOT_USERNAME}?start=inv_${i.token}`;
+                const tr = document.createElement("tr");
+                tr.dataset.token = i.token;
+                tr.innerHTML = `
+                    <td class="mono">${link}</td>
+                    <td>${i.expires_at || "—"}</td>
+                    <td>${i.used_by ? "да" : "нет"}</td>
+                    <td></td>
+                `;
+                const actions = tr.lastElementChild;
+                const select = document.createElement("select");
+                select.className = "select";
+                select.innerHTML = `
+                    <option value="" selected disabled>Действия</option>
+                    <option value="send">Отправить</option>
+                    <option value="copy">Копировать</option>
+                    <option value="delete">Удалить</option>
+                `;
+                select.onchange = () => {
+                    const val = select.value;
+                    select.selectedIndex = 0;
+                    if (val === "send") shareInvite(link);
+                    if (val === "copy") copyInvite(link);
+                    if (val === "delete") deleteInvite(i.token);
+                };
+                actions.appendChild(select);
+                frag.appendChild(tr);
+            });
+            tbody.replaceChildren(frag);
         }
 
         function formatClient(clientId) {
             if (!clientId) return "—";
-            const found = clientsCache.find(c => Number(c.user_id) === Number(clientId));
+            const found = (clientsCache || []).find(c => Number(c.user_id) === Number(clientId));
             if (!found) return clientId;
             const uname = found.username ? "@" + found.username : "";
             const name = found.first_name || "Клиент";
             return `${name} ${uname}`.trim();
         }
 
-        function showTab(tab) {
-            document.getElementById("projectsTable").style.display = tab === "projects" ? "table" : "none";
-            document.getElementById("clientsTable").style.display = tab === "clients" ? "table" : "none";
-            const tp = document.getElementById("tabProjects");
-            const tc = document.getElementById("tabClients");
-            if (tp && tc) {
-                tp.classList.toggle("active", tab === "projects");
-                tc.classList.toggle("active", tab === "clients");
+        function hideTab(name) {
+            const hide = id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = "none";
+            };
+            if (name === "clients") {
+                hide("navClients");
+                hide("section-clients");
             }
-            if (tab === "clients") {
-                loadClients();
+            if (name === "invites") {
+                hide("navClientsInvite");
+                hide("section-clients-invite");
+                hide("navTeamInvite");
+                hide("section-team-invite");
             }
+            if (name === "finance") {
+                hide("navFinance");
+                hide("section-finance");
+            }
+        }
+
+        function renderPayments(payments) {
+            const list = document.getElementById("paymentsList");
+            const empty = document.getElementById("paymentsEmpty");
+            if (!list) return;
+            list.innerHTML = "";
+            if (!payments || !payments.length) {
+                if (empty) empty.style.display = "block";
+                return;
+            }
+            if (empty) empty.style.display = "none";
+            payments.forEach(p => {
+                const card = document.createElement("div");
+                card.className = "payment-card";
+                const payer = p.payer_label || "Плательщик";
+                const amount = formatAmount(p.amount, p.currency);
+                const project = p.project_label || "Проект";
+                const deal = p.deal_title || "Сделка";
+                const stage = p.stage_title || "Этап";
+                const type = paymentTypeLabel(p.payment_type || p.type);
+                const source = paymentSourceLabel(p.source);
+                card.innerHTML = `
+                    <div class="payment-title">${escapeHtml(payer)} · ${escapeHtml(amount)}</div>
+                    <div class="payment-meta">
+                        <span>${escapeHtml(project)}</span>
+                        <span>•</span>
+                        <span>${escapeHtml(deal)}</span>
+                        <span>•</span>
+                        <span>${escapeHtml(stage)}</span>
+                    </div>
+                    <div class="payment-meta">
+                        <span>${escapeHtml(type)}</span>
+                        <span>•</span>
+                        <span>${escapeHtml(source)}</span>
+                        <span>•</span>
+                        <span>${escapeHtml(p.created_at || "—")}</span>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function openPayerPicker() {
+            const modal = document.getElementById("payerPickerModal");
+            if (!modal) return;
+            modal.style.display = "flex";
+            payerTab = "recent";
+            selectedPayer = null;
+            document.getElementById("payerSearch").value = "";
+            switchPayerTab("recent");
+            loadPayers().then(() => renderPayerList());
+        }
+
+        function closePayerPicker() {
+            const modal = document.getElementById("payerPickerModal");
+            if (modal) modal.style.display = "none";
+        }
+
+        function switchPayerTab(tab) {
+            payerTab = tab;
+            ["recent", "clients", "groups"].forEach(name => {
+                const btn = document.getElementById(`payerTab${name.charAt(0).toUpperCase()}${name.slice(1)}`);
+                if (btn) btn.classList.toggle("active", name === tab);
+            });
+            renderPayerList();
+        }
+
+        function filterPayers() {
+            renderPayerList();
+        }
+
+        function renderPayerList() {
+            const list = document.getElementById("payerPickerList");
+            if (!list) return;
+            const search = (document.getElementById("payerSearch").value || "").trim().toLowerCase();
+            let items = [];
+
+            if (payerTab === "recent") {
+                items = (payersCache.recent || []).map(x => ({
+                    type: x.type,
+                    id: x.id,
+                    title: x.title,
+                    subtitle: x.subtitle
+                }));
+            } else if (payerTab === "clients") {
+                items = (payersCache.clients || []).map(c => ({
+                    type: "user",
+                    id: c.user_id,
+                    title: c.first_name || c.username || String(c.user_id),
+                    subtitle: c.username ? `@${c.username}` : "клиент"
+                }));
+            } else {
+                items = (payersCache.groups || []).map(g => ({
+                    type: "group",
+                    id: g.group_id,
+                    title: g.group_title || g.proj_code || String(g.project_id),
+                    subtitle: "группа"
+                }));
+            }
+
+            if (search) {
+                items = items.filter(item => {
+                    return `${item.title} ${item.subtitle}`.toLowerCase().includes(search);
+                });
+            }
+
+            list.innerHTML = "";
+            if (!items.length) {
+                list.innerHTML = `<div class="row" style="color:var(--muted);">Ничего не найдено.</div>`;
+                return;
+            }
+            items.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "picker-item";
+                div.innerHTML = `
+                    <div>${escapeHtml(item.title)}</div>
+                    <div class="picker-sub">${escapeHtml(item.subtitle || "")}</div>
+                `;
+                div.onclick = () => {
+                    selectedPayer = item;
+                    closePayerPicker();
+                    openPaymentForm();
+                };
+                list.appendChild(div);
+            });
+        }
+
+        async function openPaymentForm(options = {}) {
+            const deal = options && options.deal ? options.deal : null;
+            if (deal) {
+                const payerId = Number(deal.client_id) || 0;
+                let payerLabel = payerId ? String(payerId) : "Клиент";
+                let payerSub = "клиент";
+                if (!clientsCache) {
+                    clientsCache = await loadClients(true);
+                }
+                const client = (clientsCache || []).find(c => Number(c.user_id) === payerId);
+                if (client) {
+                    payerLabel = client.first_name || (client.username ? `@${client.username}` : String(payerId));
+                    payerSub = client.username ? `@${client.username}` : "клиент";
+                }
+                selectedPayer = {
+                    type: "user",
+                    id: payerId,
+                    title: payerLabel,
+                    subtitle: payerSub
+                };
+            }
+            if (!selectedPayer) {
+                showError("Выберите плательщика");
+                return;
+            }
+            const modal = document.getElementById("paymentFormModal");
+            if (!modal) return;
+            const payerLabel = document.getElementById("paymentPayerLabel");
+            payerLabel.textContent = `${selectedPayer.title}${selectedPayer.subtitle ? " | " + selectedPayer.subtitle : ""}`;
+
+            const projectSelect = document.getElementById("paymentProject");
+            const dealSelect = document.getElementById("paymentDeal");
+            const stageSelect = document.getElementById("paymentStage");
+            projectSelect.innerHTML = "";
+            dealSelect.innerHTML = "";
+            stageSelect.innerHTML = "";
+
+            if (!projectsCache) {
+                projectsCache = await loadProjects(currentRole);
+            }
+            const projects = (projectsCache || []).filter(p => p.is_active);
+            if (!projects.length) {
+                showError("Нет активных проектов.");
+                return;
+            }
+
+            projects.forEach(p => {
+                const opt = document.createElement("option");
+                opt.value = p.project_id;
+                opt.textContent = p.group_title || p.proj_code || p.project_id;
+                projectSelect.appendChild(opt);
+            });
+
+            projectSelect.onchange = async () => {
+                const projectId = Number(projectSelect.value);
+                const stages = await loadStages(projectId);
+                renderStageOptions(stageSelect, stages);
+                const deals = await loadDealsByProject(projectId);
+                renderDealOptions(dealSelect, deals, selectedPayer);
+                if (deal && Number(deal.project_id) === projectId) {
+                    dealSelect.value = String(deal.deal_id);
+                }
+            };
+
+            const initialProjectId = Number(projectSelect.value);
+            const stages = await loadStages(initialProjectId);
+            renderStageOptions(stageSelect, stages);
+            const deals = await loadDealsByProject(initialProjectId);
+            renderDealOptions(dealSelect, deals, selectedPayer);
+            if (deal) {
+                if (deal.project_id) {
+                    projectSelect.value = String(deal.project_id);
+                    const dealStages = await loadStages(Number(deal.project_id));
+                    renderStageOptions(stageSelect, dealStages);
+                    const dealList = await loadDealsByProject(Number(deal.project_id));
+                    renderDealOptions(dealSelect, dealList, selectedPayer);
+                }
+                if (deal.deal_id) {
+                    dealSelect.value = String(deal.deal_id);
+                }
+            }
+
+            document.getElementById("paymentAmount").value = "";
+            document.getElementById("paymentComment").value = "";
+            const fileInput = document.getElementById("paymentDocument");
+            if (fileInput) fileInput.value = "";
+
+            modal.style.display = "flex";
+        }
+
+        function renderDealOptions(select, deals, payer) {
+            select.innerHTML = "";
+            let filtered = Array.isArray(deals) ? deals.slice() : [];
+            if (payer && payer.type === "user") {
+                filtered = filtered.filter(d => Number(d.client_id) === Number(payer.id));
+            }
+            if (!filtered.length) {
+                const opt = document.createElement("option");
+                opt.value = "";
+                opt.textContent = "Сделка не найдена";
+                select.appendChild(opt);
+                return;
+            }
+            filtered.forEach(d => {
+                const opt = document.createElement("option");
+                opt.value = d.deal_id;
+                opt.textContent = d.title || `Сделка #${d.deal_id}`;
+                select.appendChild(opt);
+            });
+        }
+
+        function renderStageOptions(select, stages) {
+            select.innerHTML = "";
+            if (!stages || !stages.length) {
+                const opt = document.createElement("option");
+                opt.value = "";
+                opt.textContent = "Этап не найден";
+                select.appendChild(opt);
+                return;
+            }
+            stages.forEach(s => {
+                const opt = document.createElement("option");
+                opt.value = s.stage_id;
+                opt.textContent = s.title || s.stage_id;
+                select.appendChild(opt);
+            });
+        }
+
+        function renderDeveloperOptions(select, devs, selectedId = "") {
+            const list = Array.isArray(devs) ? devs : [];
+            const base = `<option value="">— не назначать —</option>`;
+            const options = list.map(d => {
+                const name = d.username ? `@${d.username}` : (d.first_name || d.user_id);
+                return `<option value="${d.user_id}">${escapeHtml(name)}</option>`;
+            });
+            select.innerHTML = base + options.join("");
+            if (selectedId) {
+                select.value = String(selectedId);
+            } else {
+                select.value = "";
+            }
+        }
+
+        function closePaymentForm() {
+            const modal = document.getElementById("paymentFormModal");
+            if (modal) modal.style.display = "none";
+        }
+
+        async function submitPayment() {
+            if (!selectedPayer) {
+                showError("Не выбран плательщик");
+                return;
+            }
+            const projectId = Number(document.getElementById("paymentProject").value);
+            const dealId = Number(document.getElementById("paymentDeal").value);
+            const stageId = Number(document.getElementById("paymentStage").value);
+            const amount = document.getElementById("paymentAmount").value.trim();
+            const currency = document.getElementById("paymentCurrency").value;
+            const type = document.querySelector("input[name='paymentType']:checked")?.value;
+            const source = document.querySelector("input[name='paymentSource']:checked")?.value;
+            const comment = document.getElementById("paymentComment").value.trim();
+            const fileInput = document.getElementById("paymentDocument");
+            const documentId = fileInput && fileInput.files && fileInput.files[0]
+                ? fileInput.files[0].name
+                : "";
+
+            if (!projectId || !dealId || !stageId || !amount) {
+                showError("Заполните обязательные поля.");
+                return;
+            }
+
+            const initData = window.Telegram?.WebApp?.initData || "";
+            const payload = {
+                initData,
+                payer_id: selectedPayer.id,
+                payer_type: selectedPayer.type,
+                project_id: projectId,
+                deal_id: dealId,
+                stage_id: stageId,
+                amount,
+                currency,
+                type,
+                source,
+                comment,
+                document_id: documentId
+            };
+            const res = await api("/api/finance/payments/create", payload);
+            if (!res.ok) {
+                showError(res.error || "Ошибка фиксации оплаты");
+                return;
+            }
+            closePaymentForm();
+            showSuccess("Оплата зафиксирована");
+            paymentsCache = null;
+            const payments = await loadPayments(true);
+            renderPayments(payments || []);
+            dealsCache = null;
+            loadDeals(true).then(data => renderDeals(data || [], currentRole));
+        }
+
+        async function showSection(section, skipLoad = false) {
+            const sections = ["team", "team_invite", "projects", "deals", "clients", "clients_invite", "finance"];
+            sections.forEach(s => {
+                const key = s.replace("_", "-");
+                const el = document.getElementById(`section-${key}`);
+                if (el) el.style.display = s === section ? "block" : "none";
+                const navId = s === "clients_invite"
+                    ? "navClientsInvite"
+                    : s === "team_invite"
+                        ? "navTeamInvite"
+                        : `nav${s.charAt(0).toUpperCase()}${s.slice(1)}`;
+                const nav = document.getElementById(navId);
+                if (nav) nav.classList.toggle("active", s === section);
+            });
+            if (!skipLoad) {
+                if (section === "clients") {
+                    if (!clientsCache) {
+                        renderTableLoading("clientsBody", 7, "Загрузка клиентов...");
+                    } else {
+                        renderClients(clientsCache || []);
+                    }
+                    loadClients().then(data => {
+                        clientsCache = data || [];
+                        renderClients(clientsCache);
+                    });
+                    const search = document.getElementById("clientSearch");
+                    if (search) search.focus();
+                }
+                if (section === "clients_invite") {
+                    renderClientInvites([]);
+                    loadClientInvites();
+                }
+                if (section === "projects") {
+                    if (!projectsCache) {
+                        renderTableLoading("projectsBody", 6, "Загрузка проектов...");
+                    } else {
+                        renderProjects(projectsCache || [], currentRole);
+                    }
+                    loadProjects(currentRole).then(data => {
+                        projectsCache = data || [];
+                        loadDeals().then(deals => {
+                            dealsCache = deals || [];
+                            renderProjects(projectsCache, currentRole);
+                        });
+                    });
+                }
+                if (section === "deals") {
+                    if (!dealsCache) {
+                        renderTableLoading("dealsBody", 7, "Загрузка сделок...");
+                    } else {
+                        renderDeals(dealsCache || [], currentRole);
+                    }
+                    loadDeals().then(data => {
+                        dealsCache = data || [];
+                        renderDeals(dealsCache, currentRole);
+                    });
+                }
+                if (section === "team") {
+                    if (!teamCache) {
+                        renderTableLoading("teamBody", 7, "Загрузка команды...");
+                    } else {
+                        renderTeam(teamCache || []);
+                    }
+                    loadTeam().then(data => {
+                        teamCache = data || [];
+                        renderTeam(teamCache);
+                    });
+                }
+                if (section === "finance") {
+                    if (!paymentsCache) {
+                        renderPayments([]);
+                    } else {
+                        renderPayments(paymentsCache || []);
+                    }
+                    loadPayments().then(data => {
+                        paymentsCache = data || [];
+                        renderPayments(paymentsCache);
+                    });
+                }
+                if (section === "team_invite") {
+                    renderDevInvites([]);
+                    loadDevInvites();
+                }
+            }
+            toggleSidebar(false);
+        }
+
+        function ensureNavHierarchyData() {
+            if (!(currentRole === "admin" || currentRole === "owner")) return;
+            if (!clientsCache) {
+                loadClients().then(data => {
+                    clientsCache = data || [];
+                    renderClientHierarchy();
+                });
+            }
+            if (!projectsCache) {
+                loadProjects(currentRole).then(p => {
+                    projectsCache = p || [];
+                    renderClientHierarchy();
+                });
+            }
+            if (!dealsCache) {
+                loadDeals().then(d => {
+                    dealsCache = d || [];
+                    renderClientHierarchy();
+                });
+            }
+        }
+
+        function toggleSidebar(open) {
+            const sidebar = document.getElementById("sidebar");
+            const backdrop = document.getElementById("sidebarBackdrop");
+            if (!sidebar || !backdrop) return;
+            const shouldOpen = typeof open === "boolean" ? open : !sidebar.classList.contains("open");
+            sidebar.classList.toggle("open", shouldOpen);
+            backdrop.classList.toggle("show", shouldOpen);
         }
 
         function openRenameModal(projectId) {
@@ -569,32 +2486,555 @@
             document.getElementById("editClientModal").style.display = "none";
         }
 
+        function getProjectActiveClientId(project) {
+            if (!project) return null;
+            return project.active_client_id || project.client_id || null;
+        }
+
+        function renderDealProjectOptions(select, projects, selectedProjectId = "") {
+            const options = (projects || []).map(p => {
+                const label = p.group_title || p.proj_code || p.project_id;
+                return `<option value="${p.project_id}">${escapeHtml(label)}</option>`;
+            });
+            const base = `<option value="">— без проекта —</option>`;
+            select.innerHTML = options.length ? base + options.join("") : base;
+            if (selectedProjectId) {
+                select.value = String(selectedProjectId);
+            } else {
+                select.value = "";
+            }
+        }
+
+        async function openDealModal(dealToEdit = null) {
+            if (!(currentRole === "admin" || currentRole === "owner")) return;
+            const modal = document.getElementById("dealModal");
+            const titleEl = document.getElementById("dealModalTitle");
+            const submitBtn = document.getElementById("dealSubmitBtn");
+            const projectSelect = document.getElementById("dealProjectSelect");
+            const clientSelect = document.getElementById("dealClientSelect");
+            const statusSelect = document.getElementById("dealStatusSelect");
+            const developerSelect = document.getElementById("dealDeveloperSelect");
+            const stageSelect = document.getElementById("dealPaymentStage");
+            const editing = !!dealToEdit;
+            editingDealId = editing ? Number(dealToEdit.deal_id) : null;
+            if (titleEl) titleEl.textContent = editing ? "Редактировать сделку" : "Новая сделка";
+            if (submitBtn) submitBtn.textContent = editing ? "Сохранить" : "Создать";
+            projectSelect.disabled = editing;
+            clientSelect.disabled = editing;
+            document.getElementById("dealPaymentAmount").disabled = editing;
+            document.getElementById("dealPaymentCurrency").disabled = editing;
+            document.getElementById("dealPaymentType").disabled = editing;
+            document.getElementById("dealPaymentSource").disabled = editing;
+            document.getElementById("dealPaymentStage").disabled = editing;
+            if (!projectsCache) {
+                projectsCache = await loadProjects(currentRole, true);
+            }
+            if (!clientsCache) {
+                clientsCache = await loadClients(true);
+            }
+            if (!teamCache) {
+                teamCache = await loadTeam(true);
+            }
+            const clientOptions = (clientsCache || [])
+                .filter(c => c.is_active !== false)
+                .map(c => {
+                const label = c.username ? `@${c.username}` : (c.first_name || c.user_id);
+                return `<option value="${c.user_id}">${escapeHtml(label)}</option>`;
+            });
+            clientSelect.innerHTML = clientOptions.length
+                ? `<option value="">— выбрать клиента —</option>` + clientOptions.join("")
+                : `<option value="">Нет клиентов</option>`;
+            const activeProjects = (projectsCache || []).filter(p => p.is_active !== false);
+            renderDealProjectOptions(projectSelect, activeProjects);
+            const allDevelopers = (teamCache || []).filter(m => m.role === "developer" && m.is_active !== false);
+            renderDeveloperOptions(developerSelect, allDevelopers);
+            statusSelect.innerHTML = DEAL_STATUS_ORDER.map(s => {
+                return `<option value="${s}">${escapeHtml(dealStatusLabel(s))}</option>`;
+            }).join("");
+            document.getElementById("dealTitleInput").value = editing ? (dealToEdit.title || "") : "";
+            document.getElementById("dealPaymentAmount").value = "";
+            document.getElementById("dealPaymentCurrency").value = "RUB";
+            document.getElementById("dealPaymentType").value = "prepay";
+            document.getElementById("dealPaymentSource").value = "transfer";
+            clientSelect.value = editing && dealToEdit.client_id ? String(dealToEdit.client_id) : "";
+            if (editing && dealToEdit.project_id) {
+                projectSelect.value = String(dealToEdit.project_id);
+                statusSelect.value = dealToEdit.deal_status || "KP_SENT";
+                if (dealToEdit.developer_id) {
+                    developerSelect.value = String(dealToEdit.developer_id);
+                }
+                const projectDevs = await loadProjectDevelopers(Number(dealToEdit.project_id));
+                renderDeveloperOptions(developerSelect, projectDevs, dealToEdit.developer_id || "");
+                const stages = await loadStages(Number(dealToEdit.project_id));
+                renderStageOptions(stageSelect, stages);
+            } else if (selectedProjectFilter) {
+                const selectedProject = activeProjects.find(p => Number(p.project_id) === Number(selectedProjectFilter));
+                if (selectedProject) {
+                    projectSelect.value = String(selectedProject.project_id);
+                    const activeClientId = getProjectActiveClientId(selectedProject);
+                    if (activeClientId) {
+                        clientSelect.value = String(activeClientId);
+                    }
+                    const projectDevs = await loadProjectDevelopers(selectedProject.project_id);
+                    renderDeveloperOptions(developerSelect, projectDevs, projectDevs.length === 1 ? projectDevs[0].user_id : "");
+                    const stages = await loadStages(selectedProject.project_id);
+                    renderStageOptions(stageSelect, stages);
+                } else {
+                    projectSelect.value = "";
+                }
+            } else {
+                projectSelect.value = "";
+            }
+            clientSelect.onchange = () => {
+                const clientId = Number(clientSelect.value) || 0;
+                const allProjects = (projectsCache || []).filter(p => p.is_active !== false);
+                const filtered = clientId
+                    ? allProjects.filter(p => Number(getProjectActiveClientId(p)) === clientId)
+                    : allProjects;
+                const currentProjectId = Number(projectSelect.value) || 0;
+                renderDealProjectOptions(projectSelect, filtered, filtered.some(p => Number(p.project_id) === currentProjectId) ? currentProjectId : "");
+                if (!currentProjectId && filtered.length === 1) {
+                    projectSelect.value = String(filtered[0].project_id);
+                    projectSelect.onchange();
+                }
+            };
+            projectSelect.onchange = async () => {
+                const projectId = Number(projectSelect.value) || 0;
+                if (!projectId) {
+                    renderDeveloperOptions(developerSelect, allDevelopers);
+                    stageSelect.innerHTML = "";
+                    return;
+                }
+                const proj = (projectsCache || []).find(p => Number(p.project_id) === projectId);
+                const activeClientId = getProjectActiveClientId(proj);
+                if (activeClientId) {
+                    clientSelect.value = String(activeClientId);
+                }
+                const projectDevs = await loadProjectDevelopers(projectId);
+                renderDeveloperOptions(developerSelect, projectDevs, projectDevs.length === 1 ? projectDevs[0].user_id : "");
+                const stages = await loadStages(projectId);
+                renderStageOptions(stageSelect, stages);
+            };
+            if (modal) modal.style.display = "flex";
+        }
+
+        function closeDealModal() {
+            const modal = document.getElementById("dealModal");
+            editingDealId = null;
+            if (modal) modal.style.display = "none";
+        }
+
+        async function submitDeal() {
+            const projectValue = document.getElementById("dealProjectSelect").value;
+            let projectId = projectValue ? Number(projectValue) : null;
+            if (!projectId && selectedProjectFilter) {
+                projectId = Number(selectedProjectFilter) || null;
+            }
+            const clientId = Number(document.getElementById("dealClientSelect").value);
+            const developerId = Number(document.getElementById("dealDeveloperSelect").value) || null;
+            const title = document.getElementById("dealTitleInput").value.trim();
+            const status = document.getElementById("dealStatusSelect").value;
+            const amountRaw = document.getElementById("dealPaymentAmount").value.trim();
+            const currency = document.getElementById("dealPaymentCurrency").value;
+            const paymentType = document.getElementById("dealPaymentType").value;
+            const paymentSource = document.getElementById("dealPaymentSource").value;
+            const stageId = Number(document.getElementById("dealPaymentStage").value) || null;
+            if (!clientId) return showError("Выберите клиента");
+            const initData = window.Telegram?.WebApp?.initData || "";
+            if (editingDealId) {
+                const res = await api("/api/deals/update", {
+                    initData,
+                    deal_id: editingDealId,
+                    title,
+                    developer_id: developerId,
+                    status
+                });
+                if (!res.ok) return showError(res.error || "Ошибка");
+                showSuccess("Сделка обновлена");
+            } else {
+                if (amountRaw && !projectId) return showError("Для оплаты выберите проект");
+                if (amountRaw && !stageId) return showError("Для оплаты выберите этап");
+                const res = await api("/api/deals/create", {
+                    initData,
+                    project_id: projectId,
+                    client_id: clientId,
+                    developer_id: developerId,
+                    title,
+                    status
+                });
+                if (!res.ok) return showError(res.error || "Ошибка");
+                const dealId = res.deal_id;
+                if (amountRaw) {
+                    const payment = await api("/api/finance/payments/create", {
+                        initData,
+                        payer_id: clientId,
+                        payer_type: "user",
+                        project_id: projectId,
+                        deal_id: dealId,
+                        stage_id: stageId,
+                        amount: amountRaw,
+                        currency,
+                        type: paymentType,
+                        source: paymentSource,
+                        comment: "Создано вместе со сделкой"
+                    });
+                    if (!payment.ok) {
+                        showError((payment.error || "Ошибка") + " (сделка создана, но оплата не записана)");
+                    }
+                }
+                showSuccess("Сделка создана");
+            }
+            closeDealModal();
+            dealsCache = null;
+            loadDeals(true).then(data => {
+                renderDeals(data || [], currentRole);
+                if (projectsCache) renderProjects(projectsCache, currentRole);
+            });
+        }
+
+        function closeClientProfile() {
+            const modal = document.getElementById("clientProfileModal");
+            if (modal) modal.style.display = "none";
+        }
+
+        function renderDeveloperChips(devs) {
+            if (!Array.isArray(devs) || !devs.length) return "—";
+            return devs.map(d => {
+                const name = d.username ? `@${d.username}` : (d.first_name || d.user_id);
+                return `<span class="chip">${escapeHtml(name)}</span>`;
+            }).join(" ");
+        }
+
+        function renderClientProfile(payload) {
+            const body = document.getElementById("clientProfileBody");
+            const client = payload.client || {};
+            const projects = Array.isArray(payload.projects) ? payload.projects : [];
+            const deals = Array.isArray(payload.deals) ? payload.deals : [];
+            const history = Array.isArray(payload.history) ? payload.history : [];
+            const payments = Array.isArray(payload.payments) ? payload.payments : [];
+
+            const name = client.first_name || "Клиент";
+            const username = client.username ? `@${client.username}` : "—";
+            const role = roleLabel(client.role);
+            const active = client.is_active ? "да" : "нет";
+            const created = client.created_at || "—";
+            const statusLabel = client.client_status_label || clientStatusLabel(client.client_status);
+
+            const projectsRows = projects.map(p => {
+                const code = p.proj_code || p.project_id || "—";
+                const group = p.group_title || "—";
+                const devs = renderDeveloperChips(p.developers || []);
+                return `
+                    <tr>
+                        <td>${escapeHtml(code)}</td>
+                        <td class="cell-wrap">${escapeHtml(group)}</td>
+                        <td>${devs}</td>
+                    </tr>
+                `;
+            }).join("");
+
+            const projectsTable = projects.length
+                ? `
+                    <div class="table-wrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Код</th>
+                                    <th>Проект</th>
+                                    <th>Разработчики</th>
+                                </tr>
+                            </thead>
+                            <tbody>${projectsRows}</tbody>
+                        </table>
+                    </div>
+                `
+                : `<div class="row">У клиента пока нет проектов.</div>`;
+
+            const dealsRows = deals.map(d => {
+                const projectLabel = d.project_label || d.project_id || "—";
+                const status = d.status_label || dealStatusLabel(d.deal_status);
+                return `
+                    <tr>
+                        <td>${escapeHtml(d.title || "Сделка")}</td>
+                        <td>${escapeHtml(projectLabel)}</td>
+                        <td>${escapeHtml(status)}</td>
+                        <td>${escapeHtml(d.updated_at || d.created_at || "—")}</td>
+                    </tr>
+                `;
+            }).join("");
+
+            const dealsTable = deals.length
+                ? `
+                    <div class="table-wrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Сделка</th>
+                                    <th>Проект</th>
+                                    <th>Статус</th>
+                                    <th>Обновлено</th>
+                                </tr>
+                            </thead>
+                            <tbody>${dealsRows}</tbody>
+                        </table>
+                    </div>
+                `
+                : `<div class="row">Сделок пока нет.</div>`;
+
+            const historyRows = history.map(h => {
+                const fromLabel = clientStatusLabel(h.from_status);
+                const toLabel = clientStatusLabel(h.to_status);
+                const note = h.note || "—";
+                return `
+                    <tr>
+                        <td>${escapeHtml(fromLabel)}</td>
+                        <td>${escapeHtml(toLabel)}</td>
+                        <td>${escapeHtml(note)}</td>
+                        <td>${escapeHtml(h.changed_at || "—")}</td>
+                    </tr>
+                `;
+            }).join("");
+
+            const historyTable = history.length
+                ? `
+                    <div class="table-wrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Из</th>
+                                    <th>В</th>
+                                    <th>Комментарий</th>
+                                    <th>Дата</th>
+                                </tr>
+                            </thead>
+                            <tbody>${historyRows}</tbody>
+                        </table>
+                    </div>
+                `
+                : `<div class="row">История пока пуста.</div>`;
+
+            const paymentsRows = payments.map(p => {
+                const amount = formatAmount(p.amount, p.currency);
+                const project = p.project_label || p.project_id || "—";
+                const deal = p.deal_title || "—";
+                const stage = p.stage_title || "—";
+                const type = paymentTypeLabel(p.payment_type || p.type);
+                const created = p.created_at || "—";
+                return `
+                    <tr>
+                        <td>${escapeHtml(amount)}</td>
+                        <td>${escapeHtml(project)}</td>
+                        <td>${escapeHtml(deal)}</td>
+                        <td>${escapeHtml(stage)}</td>
+                        <td>${escapeHtml(type)}</td>
+                        <td>${escapeHtml(created)}</td>
+                    </tr>
+                `;
+            }).join("");
+
+            const paymentsBlock = payments.length
+                ? `
+                    <div class="table-wrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Сумма</th>
+                                    <th>Проект</th>
+                                    <th>Сделка</th>
+                                    <th>Этап</th>
+                                    <th>Тип</th>
+                                    <th>Дата</th>
+                                </tr>
+                            </thead>
+                            <tbody>${paymentsRows}</tbody>
+                        </table>
+                    </div>
+                `
+                : `<div class="row">Оплаты пока не внесены. Вы добавите их позже.</div>`;
+
+            body.innerHTML = `
+                <div class="profile-section">
+                    <div class="profile-title">Клиент</div>
+                    <div class="profile-list">
+                        <div><strong>${escapeHtml(name)}</strong></div>
+                        <div>Username: ${escapeHtml(username)}</div>
+                        <div>Роль: ${escapeHtml(role || "—")}</div>
+                        <div>Статус: ${escapeHtml(statusLabel || "—")}</div>
+                        <div>Активен: ${escapeHtml(active)}</div>
+                        <div>Создан: ${escapeHtml(created)}</div>
+                    </div>
+                </div>
+                <div class="profile-section">
+                    <div class="profile-title">Проекты (${projects.length})</div>
+                    ${projectsTable}
+                </div>
+                <div class="profile-section">
+                    <div class="profile-title">Сделки (${deals.length})</div>
+                    ${dealsTable}
+                </div>
+                <div class="profile-section">
+                    <div class="profile-title">История статусов</div>
+                    ${historyTable}
+                </div>
+                <div class="profile-section">
+                    <div class="profile-title">Оплаты</div>
+                    ${paymentsBlock}
+                </div>
+            `;
+        }
+
+        async function openClientProfile(client) {
+            if (!client || !client.user_id) return;
+            const modal = document.getElementById("clientProfileModal");
+            const body = document.getElementById("clientProfileBody");
+            if (body) body.innerHTML = `<div class="profile-section">Загрузка...</div>`;
+            if (modal) modal.style.display = "flex";
+
+            const initData = window.Telegram?.WebApp?.initData || "";
+            const res = await api("/api/admin/clients/profile", { initData, user_id: client.user_id });
+            if (!res.ok) {
+                showError(res.error || "Ошибка загрузки клиента");
+                if (body) body.innerHTML = `<div class="profile-section">Ошибка загрузки.</div>`;
+                return;
+            }
+            renderClientProfile(res);
+        }
+
+        let _dialogResolve = null;
+
+        function openDialog({ title, message, input = false, placeholder = "", confirmText = "Ок", cancelText = null }) {
+            const modal = document.getElementById("dialogModal");
+            const titleEl = document.getElementById("dialogTitle");
+            const msgEl = document.getElementById("dialogMessage");
+            const inputRow = document.getElementById("dialogInputRow");
+            const inputEl = document.getElementById("dialogInput");
+            const cancelBtn = document.getElementById("dialogCancel");
+            const confirmBtn = document.getElementById("dialogConfirm");
+
+            titleEl.textContent = title || "Сообщение";
+            msgEl.textContent = message || "";
+            confirmBtn.textContent = confirmText || "Ок";
+
+            if (input) {
+                inputRow.style.display = "block";
+                inputEl.placeholder = placeholder || "";
+                inputEl.value = "";
+                setTimeout(() => inputEl.focus(), 0);
+            } else {
+                inputRow.style.display = "none";
+            }
+
+            if (cancelText) {
+                cancelBtn.style.display = "inline-flex";
+                cancelBtn.textContent = cancelText;
+            } else {
+                cancelBtn.style.display = "none";
+            }
+
+            modal.style.display = "flex";
+
+            return new Promise(resolve => {
+                _dialogResolve = resolve;
+                confirmBtn.onclick = () => {
+                    modal.style.display = "none";
+                    resolve(input ? inputEl.value.trim() : true);
+                };
+                cancelBtn.onclick = () => {
+                    modal.style.display = "none";
+                    resolve(input ? null : false);
+                };
+            });
+        }
+
+        async function showAlert(message) {
+            await openDialog({ title: "Сообщение", message, confirmText: "Ок" });
+        }
+
+        async function showConfirm(message) {
+            const res = await openDialog({ title: "Подтверждение", message, confirmText: "Удалить", cancelText: "Отмена" });
+            return Boolean(res);
+        }
+
+        async function showPrompt(message, placeholder = "") {
+            const res = await openDialog({
+                title: "Введите значение",
+                message,
+                input: true,
+                placeholder,
+                confirmText: "Ок",
+                cancelText: "Отмена"
+            });
+            return res;
+        }
+
         async function submitEditClient() {
             const first_name = document.getElementById("editClientName").value.trim();
             const username = document.getElementById("editClientUsername").value.trim().replace("@", "");
             const initData = window.Telegram?.WebApp?.initData || "";
             const res = await api("/api/admin/clients/update", { initData, user_id: editClientId, first_name, username });
             if (!res.ok) return showError(res.error || "Ошибка");
-            showSuccess("Клиент обновлен");
-            closeEditClientModal();
-            await loadClients();
-            loadProjects("admin");
+                showSuccess("Клиент обновлен");
+                closeEditClientModal();
+                clientsCache = (clientsCache || []).map(c => c.user_id === editClientId
+                    ? { ...c, first_name, username }
+                    : c
+                );
+                renderClients(clientsCache);
+                loadClients(true).then(data => renderClients(data || []));
+                loadProjects("admin", true).then(data => renderProjects(data || [], "admin"));
+                loadDeals(true).then(data => renderDeals(data || [], currentRole));
         }
 
         async function deleteClient(client) {
-            if (!confirm(`Удалить клиента ${client.first_name || client.user_id}?`)) return;
+            if (!await showConfirm(`Удалить клиента ${client.first_name || client.user_id}?`)) return;
             const initData = window.Telegram?.WebApp?.initData || "";
-            const res = await api("/api/admin/clients/delete", { initData, user_id: client.user_id });
+
+            const prev = Array.isArray(clientsCache) ? clientsCache.slice() : [];
+            clientsCache = prev.filter(x => x.user_id !== client.user_id);
+            renderClients(clientsCache);
+
+            const search = document.getElementById("clientSearch");
+            if (search) search.focus();
+
+            const res = await api("/api/admin/clients/delete", {
+                initData,
+                user_id: client.user_id
+            });
+
             if (!res.ok) {
-                if (res.error === "client_has_projects") {
-                    showError("Клиент привязан к проекту. Сначала отвяжите или архивируйте проект.");
-                    return;
+                if (res.error === "client_has_deals") {
+                    showError("У клиента есть активные сделки. Сначала завершите или удалите сделки.");
+                } else {
+                    showError(res.error || "Ошибка удаления клиента");
                 }
-                return showError(res.error || "Ошибка");
+                clientsCache = prev;
+                renderClients(prev);
+                return;
             }
-            showSuccess("Клиент удален");
-            await loadClients();
-            loadProjects("admin");
+
+            showSuccess("Клиент удалён");
+            dealsCache = null;
+            loadDeals(true).then(data => renderDeals(data || [], currentRole));
+        }
+
+        async function deleteDeveloper(dev) {
+            if (!dev || !dev.user_id) return;
+            if (!await showConfirm(`Удалить разработчика ${dev.first_name || dev.user_id}?`)) return;
+            const initData = window.Telegram?.WebApp?.initData || "";
+
+            const prev = Array.isArray(teamCache) ? teamCache.slice() : [];
+            teamCache = prev.filter(x => x.user_id !== dev.user_id);
+            renderTeam(teamCache);
+
+            const res = await api("/api/admin/deactivate", { initData, user_id: dev.user_id });
+            if (!res.ok) {
+                teamCache = prev;
+                renderTeam(prev);
+                showError(res.error || "Ошибка удаления разработчика");
+                return;
+            }
+
+            showSuccess("Разработчик удалён");
         }
 
         async function createInvite() {
@@ -602,11 +3042,89 @@
             const res = await api("/api/admin/invite-dev", { initData });
             if (!res.ok) return showError(res.error || "Ошибка");
             showSuccess("Ссылка создана");
-            alert("Ссылка для разработчика:\n" + res.link);
+            await showAlert("Ссылка для разработчика:\n" + res.link);
+        }
+
+        async function loadDevInvites() {
+            if (window.USER_ROLE === "developer") return;
+            const initData = window.Telegram?.WebApp?.initData || "";
+            const res = await api("/api/admin/invite-dev/list", { initData });
+            if (!res.ok) {
+                showError(res.error || "Ошибка загрузки ссылок");
+                return;
+            }
+            renderDevInvites(res.invites || []);
+        }
+
+        async function createDevInvite() {
+            if (window.USER_ROLE === "developer") return;
+            const initData = window.Telegram?.WebApp?.initData || "";
+            const res = await api("/api/admin/invite-dev", { initData });
+            if (!res.ok) return showError(res.error || "Ошибка");
+            showSuccess("Ссылка создана");
+            loadDevInvites();
+        }
+
+        async function loadClientInvites() {
+            if (window.USER_ROLE === "developer") return;
+            const initData = window.Telegram?.WebApp?.initData || "";
+            const res = await api("/api/admin/invite-client/list", { initData });
+            if (!res.ok) {
+                showError(res.error || "Ошибка загрузки ссылок");
+                return;
+            }
+            renderClientInvites(res.invites || []);
+        }
+
+        async function createClientInvite() {
+            if (window.USER_ROLE === "developer") return;
+            const initData = window.Telegram?.WebApp?.initData || "";
+            const res = await api("/api/admin/invite-client", { initData });
+            if (!res.ok) return showError(res.error || "Ошибка");
+            showSuccess("Ссылка создана");
+            loadClientInvites();
+        }
+
+        function shareInvite(link) {
+            const text = "Здравствуйте! Перейдите по ссылке, чтобы подключиться к нашему боту и начать работу.";
+            const url = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`;
+            if (window.Telegram?.WebApp?.openTelegramLink) {
+                window.Telegram.WebApp.openTelegramLink(url);
+            } else {
+                window.open(url, "_blank");
+            }
+        }
+
+        async function copyInvite(link) {
+            try {
+                await navigator.clipboard.writeText(link);
+                showSuccess("Ссылка скопирована");
+            } catch (e) {
+                await showAlert("Скопируйте ссылку вручную:\n" + link);
+            }
+        }
+
+        async function deleteInvite(token) {
+            if (!await showConfirm("Удалить эту ссылку?")) return;
+            const initData = window.Telegram?.WebApp?.initData || "";
+            document.querySelectorAll(`tr[data-token="${token}"]`).forEach(row => row.remove());
+            api("/api/admin/invite/delete", { initData, token }).then(res => {
+                if (!res.ok) {
+                    showError(res.error || "Ошибка");
+                    loadClientInvites();
+                    loadDevInvites();
+                    return;
+                }
+                showSuccess("Ссылка удалена");
+            }).catch(() => {
+                showError("Ошибка");
+                loadClientInvites();
+                loadDevInvites();
+            });
         }
 
         async function deactivateUser() {
-            const userId = prompt("Введите user_id для деактивации:");
+            const userId = await showPrompt("Введите user_id для деактивации:", "например: 123456");
             if (!userId) return;
             const initData = window.Telegram?.WebApp?.initData || "";
             const res = await api("/api/admin/deactivate", { initData, user_id: Number(userId) });
@@ -620,21 +3138,77 @@
                 showError("WebApp не найден. Откройте страницу из Telegram.");
                 return;
             }
-            tg.ready();
-            const initData = tg.initData || "";
-            const auth = await api("/api/auth", { initData });
-            if (!auth.ok) {
-                showError(auth.error || "Ошибка авторизации");
-                return;
+            setLoading(true);
+            isInitializing = true;
+            try {
+                tg.ready();
+                const initData = tg.initData || "";
+                const data = await api("/api/bootstrap", { initData });
+                if (!data.ok) {
+                    showError(data.error || "Ошибка авторизации");
+                    return;
+                }
+                currentRole = data.role;
+                const isAdminRole = currentRole === "admin" || currentRole === "owner";
+                window.USER_ROLE = (data.user && data.user.role) ? data.user.role : data.role;
+                document.getElementById("roleInfo").textContent = "Роль: " + roleLabel(data.role);
+                projectsCache = data.projects || [];
+                dealsCache = data.deals || [];
+                clientsCache = data.clients || [];
+                teamCache = data.team || [];
+
+                renderProjects(projectsCache, data.role);
+                renderDeals(dealsCache, data.role);
+                renderClients(clientsCache);
+                renderTeam(teamCache);
+                renderClientHierarchy();
+
+                if (isAdminRole) {
+                    document.getElementById("adminActions").style.display = "block";
+                }
+                if (!isAdminRole) {
+                    const navClients = document.getElementById("navClients");
+                    if (navClients) navClients.style.display = "none";
+                    const navClientsInvite = document.getElementById("navClientsInvite");
+                    if (navClientsInvite) navClientsInvite.style.display = "none";
+                    const addDealBtn = document.getElementById("addDealBtn");
+                    if (addDealBtn) addDealBtn.style.display = "none";
+                }
+                if (data.role === "client") {
+                    const navTeam = document.getElementById("navTeam");
+                    if (navTeam) navTeam.style.display = "none";
+                    const navFinance = document.getElementById("navFinance");
+                    if (navFinance) navFinance.style.display = "none";
+                }
+                if (window.USER_ROLE === "developer") {
+                    hideTab("clients");
+                    hideTab("invites");
+                    hideTab("finance");
+                }
+                ensureNavHierarchyData();
+            if (!isAdminRole) {
+                const teamInviteBlock = document.getElementById("teamInviteBlock");
+                if (teamInviteBlock) teamInviteBlock.style.display = "none";
+                const teamEmptyBlock = document.getElementById("teamEmptyBlock");
+                if (teamEmptyBlock) teamEmptyBlock.style.display = "block";
+                const navTeamInvite = document.getElementById("navTeamInvite");
+                if (navTeamInvite) navTeamInvite.style.display = "none";
+                const navTeam = document.getElementById("navTeam");
+                if (navTeam) navTeam.classList.add("no-sub");
+                const navTeamGroup = document.getElementById("navTeamGroup");
+                if (navTeamGroup) navTeamGroup.classList.add("no-sub");
             }
-            document.getElementById("roleInfo").textContent = "Роль: " + auth.role;
-            if (auth.role === "admin") {
-                document.getElementById("adminActions").style.display = "block";
+                if (data.role === "developer") {
+                    const projectsEmpty = document.getElementById("projectsEmpty");
+                    const projectsTable = document.getElementById("projectsTable");
+                    if (projectsEmpty) projectsEmpty.style.display = "block";
+                    if (projectsTable) projectsTable.style.display = "none";
+                }
+                isInitializing = false;
+                showSection("projects", true);
+            } finally {
+                setLoading(false);
             }
-            if (auth.role === "admin") {
-                await loadClients();
-            }
-            loadProjects(auth.role);
         }
 
         init();

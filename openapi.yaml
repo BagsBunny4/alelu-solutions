@@ -1,0 +1,243 @@
+openapi: 3.0.0
+info:
+  title: ALELU CONSULTING
+  version: 1.0.0
+servers:
+- url: https://d5df189hbtaa39lvp14l.lievo6ut.apigw.yandexcloud.net
+paths:
+  /health:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/ping:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/auth:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/bootstrap:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/projects:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/projects/developers:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/deals/list:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/deals/by-project:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/deals/create:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/deals/status:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/deals/update:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/projects/status:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/admin/projects:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/admin/clients:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/admin/clients/profile:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/admin/team:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/admin/clients/update:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/admin/clients/status:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/admin/clients/delete:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/admin/archive:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/admin/deactivate:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/admin/invite-dev:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/admin/invite-dev/list:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/admin/invite-client:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/admin/invite-client/list:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/admin/invite/delete:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/admin/rename-group:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/finance/payers:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/finance/stages:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/finance/payments/list:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /api/finance/payments/create:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
+
+  /bot/{token}:
+    parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e9sskvbis9b1r86bq3
+        service_account_id: ajeq08gp3vt3m9937tek
